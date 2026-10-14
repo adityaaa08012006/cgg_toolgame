@@ -75,6 +75,7 @@ pause={
 GameManager="*res://autoloads/game_manager.gd"
 QuestManager="*res://autoloads/quest_manager.gd"
 AudioManager="*res://autoloads/audio_manager.gd"
+SceneTransition="*res://autoloads/scene_transition.gd"
 
 
 [layer_names]

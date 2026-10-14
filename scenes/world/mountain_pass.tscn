@@ -1,0 +1,50 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/mountain_pass.gd" id="1_pass_script"]
+[ext_resource type="Script" path="res://scripts/mountain_pass_generator.gd" id="2_pass_gen"]
+[ext_resource type="PackedScene" path="res://scenes/player/hero.tscn" id="3_hero"]
+[ext_resource type="PackedScene" path="res://scenes/allies/kaelen.tscn" id="4_kaelen"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="5_dlg"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_hud.tscn" id="6_hud"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gateway"]
+size = Vector2(160, 48)
+
+[node name="MountainPass" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_pass_script")
+
+[node name="MountainPassGenerator" type="Node2D" parent="."]
+y_sort_enabled = true
+script = ExtResource("2_pass_gen")
+
+[node name="Hero" parent="." instance=ExtResource("3_hero")]
+position = Vector2(640, 1020)
+
+[node name="Camera2D" type="Camera2D" parent="Hero"]
+zoom = Vector2(1.5, 1.5)
+offset = Vector2(0, -30)
+process_callback = 0
+limit_left = 0
+limit_top = 0
+limit_right = 1280
+limit_bottom = 1280
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+
+[node name="Kaelen" parent="." instance=ExtResource("4_kaelen")]
+position = Vector2(640, 700)
+
+[node name="VanguardGatewayTrigger" type="Area2D" parent="."]
+position = Vector2(640, 180)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="VanguardGatewayTrigger"]
+shape = SubResource("RectangleShape2D_gateway")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="DialogueBox" parent="CanvasLayer" groups=["dialogue_box"] instance=ExtResource("5_dlg")]
+
+[node name="GameHUD" parent="." instance=ExtResource("6_hud")]

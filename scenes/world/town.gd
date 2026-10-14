@@ -92,13 +92,15 @@ func on_smith_equip_gear() -> void:
 		# Spawn the 2 demons at South Gate road (near gate y=1152)
 		var demon1 = demon_scene.instantiate()
 		demon1.position = Vector2(600, 1060)
+		demon1.unit_color = "Red"
 		add_child(demon1)
 
 		var demon2 = demon_scene.instantiate()
 		demon2.position = Vector2(680, 1060)
+		demon2.unit_color = "Black"
 		add_child(demon2)
 
-		QuestManager.quest_updated.emit("Slay the 2 Shadow Demons at the South Gate!")
+		QuestManager.quest_updated.emit(QuestManager.get_objective_text())
 
 func _on_altar_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
@@ -113,18 +115,22 @@ func _on_altar_exited(body: Node2D) -> void:
 func _on_south_gate_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		if QuestManager.quest_complete:
-			# Victory of Level 1!
 			GameManager.stop_doom_countdown()
-			GameManager.set_game_state(GameManager.GameState.VICTORY)
-			dialogue_box.start_dialogue([
-				{"speaker": "Haven Town", "text": "LEVEL 1 COMPLETE! You broke through the South Gate and breached the Demon Lord's Ridge in 30 seconds!"}
-			])
+			SceneTransition.change_scene(
+				"res://scenes/world/mountain_pass.tscn",
+				"Ashen Mountain Pass",
+				"Ridge of the Demon Vanguard"
+			)
 		else:
 			AudioManager.play_sfx("res://audio/sfx/impactPunch_heavy_000.ogg")
 
 func _on_church_door_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
-		get_tree().call_deferred("change_scene_to_file", "res://scenes/world/church_interior.tscn")
+		SceneTransition.change_scene(
+			"res://scenes/world/church_interior.tscn",
+			"Sanctuary of Light",
+			"Cathedral of Father Alden"
+		)
 
 func _on_quest_updated(text: String) -> void:
 	pass

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/ui/game_hud.gd" id="1_hud_script"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/panel_brown.png" id="2_panel"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/buttonLong_brown.png" id="3_banner"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="4_font"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI-Bold.ttf" id="4_font"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/barBack_horizontalMid.png" id="5_bar_bg"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/barRed_horizontalMid.png" id="6_bar_fill"]
 
@@ -27,27 +27,27 @@ script = ExtResource("1_hud_script")
 [node name="HUDPanel" type="PanelContainer" parent="."]
 offset_left = 16.0
 offset_top = 16.0
-offset_right = 320.0
-offset_bottom = 140.0
+offset_right = 260.0
+offset_bottom = 126.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_hud")
 
 [node name="VBox" type="VBoxContainer" parent="HUDPanel"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 5
 
 [node name="HPRow" type="HBoxContainer" parent="HUDPanel/VBox"]
 layout_mode = 2
 
 [node name="HPTitle" type="Label" parent="HUDPanel/VBox/HPRow"]
-custom_minimum_size = Vector2(36, 0)
+custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "HP"
 
 [node name="HPBar" type="TextureProgressBar" parent="HUDPanel/VBox/HPRow"]
-custom_minimum_size = Vector2(140, 18)
+custom_minimum_size = Vector2(110, 16)
 layout_mode = 2
 size_flags_vertical = 4
 value = 100.0
@@ -59,53 +59,53 @@ texture_progress = ExtResource("6_bar_fill")
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.8, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 text = "100/100"
 
 [node name="StatsRow" type="HBoxContainer" parent="HUDPanel/VBox"]
 layout_mode = 2
 
 [node name="CoinTitle" type="Label" parent="HUDPanel/VBox/StatsRow"]
-custom_minimum_size = Vector2(56, 0)
+custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "GOLD:"
 
 [node name="CoinVal" type="Label" parent="HUDPanel/VBox/StatsRow"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "0 G"
 
 [node name="TimerRow" type="HBoxContainer" parent="HUDPanel/VBox"]
 layout_mode = 2
 
 [node name="TimerTitle" type="Label" parent="HUDPanel/VBox/TimerRow"]
-custom_minimum_size = Vector2(56, 0)
+custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.5, 0.3, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "DOOM:"
 
 [node name="TimerVal" type="Label" parent="HUDPanel/VBox/TimerRow"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 15
 text = "--"
 
 [node name="ObjectiveBanner" type="PanelContainer" parent="."]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -340.0
-offset_top = 14.0
-offset_right = 340.0
-offset_bottom = 60.0
+offset_left = -210.0
+offset_top = 16.0
+offset_right = 210.0
+offset_bottom = 54.0
 grow_horizontal = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_banner")
 
@@ -113,7 +113,7 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_banner")
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "Speak with Master Torren at the Forge"
 horizontal_alignment = 1
 vertical_alignment = 1

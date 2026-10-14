@@ -18,6 +18,8 @@ func _ready() -> void:
 	visible = false
 
 func start_dialogue(lines: Array, callback: Callable = Callable()) -> void:
+	if SceneTransition and SceneTransition.has_method("hide_area_banner"):
+		SceneTransition.hide_area_banner()
 	dialogue_queue = lines
 	current_line = -1
 	on_finished_callback = callback
@@ -26,6 +28,7 @@ func start_dialogue(lines: Array, callback: Callable = Callable()) -> void:
 	GameManager.set_game_state(GameManager.GameState.DIALOGUE)
 	dialogue_started.emit()
 	advance()
+
 
 func advance() -> void:
 	current_line += 1

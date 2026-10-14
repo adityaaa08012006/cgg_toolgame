@@ -13,7 +13,7 @@ class_name NPC
 	"He will temper your sword into the Sunfire Blade and forge divine armor for your quest!"
 ]
 
-@onready var prompt_container: HBoxContainer = $PromptContainer
+@onready var prompt_container: Control = $PromptContainer
 @onready var interact_area: Area2D = $InteractArea
 var player_in_range: bool = false
 

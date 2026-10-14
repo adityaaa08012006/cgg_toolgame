@@ -1,0 +1,221 @@
+[gd_scene load_steps=23 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/town.gd" id="1_town_script"]
+[ext_resource type="Script" path="res://scripts/town_generator_tiny_swords.gd" id="2_generator_tiny_swords"]
+[ext_resource type="PackedScene" path="res://scenes/player/hero.tscn" id="3_hero"]
+[ext_resource type="PackedScene" path="res://scenes/npcs/npc_base.tscn" id="4_npc"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="5_dlg"]
+[ext_resource type="PackedScene" path="res://scenes/ui/game_hud.tscn" id="6_hud"]
+[ext_resource type="Texture2D" path="res://art/ui/input_prompts/Keyboard & Mouse/Default/keyboard_e_outline.png" id="7_key_e"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI-Bold.ttf" id="8_font"]
+[ext_resource type="Texture2D" path="res://art/characters/npcs/town-folk-2-free-v1.0/characters/potter/walk.png" id="9_potter"]
+[ext_resource type="Texture2D" path="res://art/characters/npcs/town-folk-2-free-v1.0/characters/errand_boy/walk.png" id="10_errand_boy"]
+[ext_resource type="Texture2D" path="res://art/characters/tiny_rpg_01/Tiny RPG Character Asset Pack 01 v2.0 -Free Soldier&Orc/Characters(100x100 split)/Soldier/Soldier with shadows/Soldier_Idle.png" id="11_soldier"]
+[ext_resource type="Texture2D" path="res://art/props/goddess_shrine.png" id="12_goddess_shrine"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_north_wall_left"]
+size = Vector2(500, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_north_wall_right"]
+size = Vector2(500, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gate_wall_left"]
+size = Vector2(500, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gate_wall_right"]
+size = Vector2(500, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_side_wall"]
+size = Vector2(64, 1280)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_barrier_col"]
+size = Vector2(64, 64)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_altar_trig"]
+radius = 48.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_church_door"]
+size = Vector2(64, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_south_gate_exit"]
+size = Vector2(64, 32)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_prompt"]
+content_margin_left = 8.0
+content_margin_top = 2.0
+content_margin_right = 9.0
+content_margin_bottom = 2.0
+bg_color = Color(0.1, 0.11, 0.15, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.95, 0.78, 0.35, 0.9)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 2
+shadow_offset = Vector2(0, 1)
+
+[node name="Town" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_town_script")
+
+[node name="TownGenerator" type="Node2D" parent="."]
+y_sort_enabled = true
+script = ExtResource("2_generator_tiny_swords")
+
+[node name="EnvironmentCollisions" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 2
+
+[node name="NorthWallLeftCol" type="CollisionShape2D" parent="EnvironmentCollisions"]
+position = Vector2(250, 48)
+shape = SubResource("RectangleShape2D_north_wall_left")
+
+[node name="NorthWallRightCol" type="CollisionShape2D" parent="EnvironmentCollisions"]
+position = Vector2(1030, 48)
+shape = SubResource("RectangleShape2D_north_wall_right")
+
+[node name="WestWallCol" type="CollisionShape2D" parent="EnvironmentCollisions"]
+position = Vector2(32, 640)
+shape = SubResource("RectangleShape2D_side_wall")
+
+[node name="EastWallCol" type="CollisionShape2D" parent="EnvironmentCollisions"]
+position = Vector2(1248, 640)
+shape = SubResource("RectangleShape2D_side_wall")
+
+[node name="GateLeftCol" type="CollisionShape2D" parent="EnvironmentCollisions"]
+position = Vector2(250, 1184)
+shape = SubResource("RectangleShape2D_gate_wall_left")
+
+[node name="GateRightCol" type="CollisionShape2D" parent="EnvironmentCollisions"]
+position = Vector2(1030, 1184)
+shape = SubResource("RectangleShape2D_gate_wall_right")
+
+[node name="SouthGateBarrier" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SouthGateBarrier"]
+position = Vector2(640, 1160)
+shape = SubResource("RectangleShape2D_barrier_col")
+
+[node name="Hero" parent="." instance=ExtResource("3_hero")]
+position = Vector2(640, 328)
+
+[node name="Camera2D" type="Camera2D" parent="Hero"]
+zoom = Vector2(1.5, 1.5)
+offset = Vector2(0, -30)
+process_callback = 0
+limit_left = 0
+limit_top = 0
+limit_right = 1280
+limit_bottom = 1280
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+
+[node name="MasterTorren" parent="." instance=ExtResource("4_npc")]
+position = Vector2(272, 400)
+npc_name = "Master Torren"
+character_texture = ExtResource("9_potter")
+
+[node name="Eldrin" parent="." instance=ExtResource("4_npc")]
+position = Vector2(880, 400)
+npc_name = "Eldrin the Herbalist"
+character_texture = ExtResource("10_errand_boy")
+
+[node name="Sentinel" parent="." instance=ExtResource("4_npc")]
+position = Vector2(570, 1040)
+npc_name = "Sentinel Gareth"
+character_texture = ExtResource("11_soldier")
+hframes = 6
+vframes = 1
+sprite_scale = Vector2(1.7, 1.7)
+
+[node name="GoddessShrine" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(640, 616)
+scale = Vector2(2, 2)
+texture = ExtResource("12_goddess_shrine")
+
+[node name="GoddessParticles" type="CPUParticles2D" parent="GoddessShrine"]
+position = Vector2(0, 4)
+emitting = true
+amount = 10
+lifetime = 1.8
+emission_shape = 1
+emission_sphere_radius = 12.0
+gravity = Vector2(0, -10)
+scale_amount_min = 1.5
+scale_amount_max = 2.5
+color = Color(0.9, 0.95, 1, 0.8)
+
+[node name="GoddessAltarArea" type="Area2D" parent="."]
+position = Vector2(640, 640)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GoddessAltarArea"]
+shape = SubResource("CircleShape2D_altar_trig")
+
+[node name="PromptContainer" type="PanelContainer" parent="GoddessAltarArea"]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -34.0
+offset_top = -68.0
+offset_right = 34.0
+offset_bottom = -44.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_prompt")
+
+[node name="HBox" type="HBoxContainer" parent="GoddessAltarArea/PromptContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+alignment = 1
+
+[node name="KeyBadge" type="TextureRect" parent="GoddessAltarArea/PromptContainer/HBox"]
+texture_filter = 1
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("7_key_e")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ActionLabel" type="Label" parent="GoddessAltarArea/PromptContainer/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.98, 0.92, 1)
+theme_override_fonts/font = ExtResource("8_font")
+theme_override_font_sizes/font_size = 13
+text = "Pray"
+vertical_alignment = 1
+
+[node name="ChurchEntranceTrigger" type="Area2D" parent="."]
+position = Vector2(640, 280)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ChurchEntranceTrigger"]
+shape = SubResource("RectangleShape2D_church_door")
+
+[node name="SouthGateExitTrigger" type="Area2D" parent="."]
+position = Vector2(640, 1190)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SouthGateExitTrigger"]
+shape = SubResource("RectangleShape2D_south_gate_exit")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="DialogueBox" parent="CanvasLayer" groups=["dialogue_box"] instance=ExtResource("5_dlg")]
+
+[node name="GameHUD" parent="." instance=ExtResource("6_hud")]

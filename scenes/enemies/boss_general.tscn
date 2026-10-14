@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://c7m8pxmak2bva"]
+
+[ext_resource type="Script" path="res://scenes/enemies/boss_general.gd" id="1_boss_script"]
+[ext_resource type="Texture2D" path="res://art/characters/tiny_rpg_02/Tiny RPG Character Asset Pack 02 -Free Demon_A&Blood Monster_A/Characters(100x100 split)/Demon_A/Demon_A with shadows/Demon_A_Idle.png" id="2_demon_idle"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_col"]
+radius = 10.0
+height = 24.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hit"]
+radius = 18.0
+
+[node name="BossGeneral" type="CharacterBody2D" groups=["boss", "enemies"]]
+scale = Vector2(2.5, 2.5)
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_boss_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -10)
+texture = ExtResource("2_demon_idle")
+hframes = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -10)
+shape = SubResource("CapsuleShape2D_col")
+
+[node name="HitBox" type="Area2D" parent="."]
+position = Vector2(0, -10)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+shape = SubResource("CircleShape2D_hit")

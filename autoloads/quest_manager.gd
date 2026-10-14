@@ -10,6 +10,12 @@ signal demon_slain(current: int, target: int)
 signal quest_updated(objective_text: String)
 signal gate_unsealed
 
+func _ready() -> void:
+	GameManager.coins_changed.connect(_on_coins_changed)
+
+func _on_coins_changed(_new_amount: int) -> void:
+	quest_updated.emit(get_objective_text())
+
 func record_demon_kill() -> void:
 	demons_killed += 1
 	demon_slain.emit(demons_killed, required_demons)

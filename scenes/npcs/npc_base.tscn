@@ -1,9 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://npc_base_01"]
+[gd_scene load_steps=7 format=3 uid="uid://npc_base_01"]
 
 [ext_resource type="Script" path="res://scenes/npcs/npc_base.gd" id="1_npc_script"]
 [ext_resource type="Texture2D" path="res://art/characters/npcs/town-folk-2-free-v1.0/characters/night_watchman/walk.png" id="2_watchman_tex"]
 [ext_resource type="Texture2D" path="res://art/ui/input_prompts/Keyboard & Mouse/Default/keyboard_e_outline.png" id="3_key_e"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="4_font"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI-Bold.ttf" id="4_font"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_npc"]
 radius = 6.0
@@ -11,6 +11,25 @@ height = 18.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_trigger"]
 radius = 28.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_prompt"]
+content_margin_left = 7.0
+content_margin_top = 2.0
+content_margin_right = 8.0
+content_margin_bottom = 2.0
+bg_color = Color(0.1, 0.11, 0.15, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.95, 0.78, 0.35, 0.9)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 2
+shadow_offset = Vector2(0, 1)
 
 [node name="NPC" type="StaticBody2D"]
 collision_layer = 32
@@ -36,28 +55,39 @@ collision_mask = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
 shape = SubResource("CircleShape2D_trigger")
 
-[node name="PromptContainer" type="HBoxContainer" parent="."]
-offset_left = -28.0
-offset_top = -42.0
-offset_right = 28.0
-offset_bottom = -18.0
+[node name="PromptContainer" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -32.0
+offset_top = -48.0
+offset_right = 32.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_prompt")
+
+[node name="HBox" type="HBoxContainer" parent="PromptContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
 alignment = 1
 
-[node name="KeyBadge" type="TextureRect" parent="PromptContainer"]
+[node name="KeyBadge" type="TextureRect" parent="PromptContainer/HBox"]
 texture_filter = 1
-custom_minimum_size = Vector2(20, 20)
+custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("3_key_e")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ActionLabel" type="Label" parent="PromptContainer"]
+[node name="ActionLabel" type="Label" parent="PromptContainer/HBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
-theme_override_constants/shadow_offset_x = 1
-theme_override_constants/shadow_offset_y = 1
+theme_override_colors/font_color = Color(1, 0.98, 0.92, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 13
 text = "Talk"
+vertical_alignment = 1

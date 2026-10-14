@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/dialogue_box.gd" id="1_dlg_script"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/panel_brown.png" id="2_panel_tex"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/buttonLong_brown.png" id="3_banner_tex"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="4_font_kenney"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI-Bold.ttf" id="4_font_bold"]
 [ext_resource type="Texture2D" path="res://art/ui/input_prompts/Keyboard & Mouse/Default/keyboard_e_outline.png" id="5_key_e"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI.ttf" id="6_font_regular"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wood"]
 texture = ExtResource("2_panel_tex")
@@ -68,8 +69,8 @@ theme_override_constants/margin_bottom = 2
 [node name="SpeakerLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/HeaderBox/BannerPanel/SpeakerMargin"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
-theme_override_fonts/font = ExtResource("4_font_kenney")
-theme_override_font_sizes/font_size = 16
+theme_override_fonts/font = ExtResource("4_font_bold")
+theme_override_font_sizes/font_size = 15
 text = "Father Alden"
 
 [node name="TextLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer"]
@@ -79,8 +80,8 @@ theme_override_colors/font_color = Color(0.96, 0.92, 0.84, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.75)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
-theme_override_fonts/font = ExtResource("4_font_kenney")
-theme_override_font_sizes/font_size = 17
+theme_override_fonts/font = ExtResource("6_font_regular")
+theme_override_font_sizes/font_size = 15
 text = "Without armor or weapon, you cannot face the darkness."
 autowrap_mode = 3
 
@@ -100,6 +101,6 @@ stretch_mode = 5
 [node name="PromptLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/FooterBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.78, 0.65, 1)
-theme_override_fonts/font = ExtResource("4_font_kenney")
-theme_override_font_sizes/font_size = 14
+theme_override_fonts/font = ExtResource("4_font_bold")
+theme_override_font_sizes/font_size = 12
 text = "continue"

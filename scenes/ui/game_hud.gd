@@ -6,8 +6,6 @@ extends CanvasLayer
 @onready var timer_label: Label = $HUDPanel/VBox/TimerRow/TimerVal
 @onready var objective_label: Label = $ObjectiveBanner/ObjectiveText
 
-const FONT_KENNEY = preload("res://art/fonts/Fonts/Kenney Mini.ttf")
-
 func _ready() -> void:
 	GameManager.player_health_changed.connect(_on_health_changed)
 	GameManager.coins_changed.connect(_on_coins_changed)
