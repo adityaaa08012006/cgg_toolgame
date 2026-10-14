@@ -74,7 +74,7 @@ func _on_boss_hp_changed(curr: int, maximum: int) -> void:
 
 func _trigger_boss_intro() -> void:
 	dialogue_box.start_dialogue([
-		{"speaker": "General Gorgath", "text": "Puny mortal! You dare enter my sanctum? Your skull shall be crushed beneath my blade!"}
+		{"speaker": "General Gorgath", "text": "Foolish mortal! You have stepped into the domain of the shadow vanguard! Fall before the Bringer of Death!"}
 	])
 
 func _on_boss_defeated() -> void:

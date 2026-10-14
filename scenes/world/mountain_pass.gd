@@ -21,9 +21,9 @@ func _on_gateway_entered(body: Node2D) -> void:
 			gateway_reached = true
 			AudioManager.play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg")
 			dialogue_box.start_dialogue([
-				{"speaker": "Kaelen of Oakhaven", "text": "This is it! The Vanguard Gateway! General Gorgath guards the inner sanctum beyond this gate."},
-				{"speaker": "Kaelen of Oakhaven", "text": "Draw your Sunfire Blade, brother! Together, we bring down the Demon Vanguard!"},
-				{"speaker": "Narrator", "text": "CHAPTER II UNLOCKED: THE ASHEN CRATER — GENERAL GORGATH"}
+				{"speaker": "Kaelen of Oakhaven", "text": "This is it! The Vanguard Gateway! Gorgath's demon reinforcements are already swarming behind us!"},
+				{"speaker": "Kaelen of Oakhaven", "text": "I will hold the gateway and keep the demon horde at bay! Step into the sanctum, brother—slay General Gorgath!"},
+				{"speaker": "Narrator", "text": "CHAPTER II: THE ASHEN CRATER — GENERAL GORGATH"}
 			], func():
 				SceneTransition.change_scene(
 					"res://scenes/world/boss_arena.tscn",

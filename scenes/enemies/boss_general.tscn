@@ -1,36 +1,37 @@
 [gd_scene format=3 uid="uid://c7m8pxmak2bva"]
 
 [ext_resource type="Script" path="res://scenes/enemies/boss_general.gd" id="1_boss_script"]
-[ext_resource type="Texture2D" path="res://art/tiny_swords/Units/Black Units/Warrior/Warrior_Idle.png" id="2_warrior_idle"]
+[ext_resource type="Texture2D" path="res://art/characters/enemies/Bringer-Of-Death/sheets/Idle.png" id="2_death_idle"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_col"]
-radius = 18.0
-height = 56.0
+radius = 14.0
+height = 46.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hit"]
-radius = 28.0
+radius = 24.0
 
 [node name="BossGeneral" type="CharacterBody2D" groups=["boss", "enemies"]]
-scale = Vector2(1.25, 1.25)
+scale = Vector2(1.8, 1.8)
 collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_boss_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
-position = Vector2(0, -32)
-texture = ExtResource("2_warrior_idle")
+texture = ExtResource("2_death_idle")
+offset = Vector2(-36, -46)
 hframes = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -28)
+position = Vector2(0, -24)
 shape = SubResource("CapsuleShape2D_col")
 
 [node name="HitBox" type="Area2D" parent="."]
-position = Vector2(0, -28)
+position = Vector2(0, -24)
 collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
 shape = SubResource("CircleShape2D_hit")
+
 
