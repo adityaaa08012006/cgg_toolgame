@@ -26,13 +26,13 @@ var move_cooldown: float = 2.0
 var state_timer: float = 0.0
 var is_enraged: bool = false
 
-# Textures from Tiny RPG Pack 02 Demon_A
-const PATH_BASE := "res://art/characters/tiny_rpg_02/Tiny RPG Character Asset Pack 02 -Free Demon_A&Blood Monster_A/Characters(100x100 split)/Demon_A/Demon_A with shadows/"
+# Textures from Tiny Swords Black Units Warrior
+const PATH_BASE := "res://art/tiny_swords/Units/Black Units/Warrior/"
 var tex_idle: Texture2D
 var tex_walk: Texture2D
 var tex_atk1: Texture2D
 var tex_atk2: Texture2D
-var tex_hurt: Texture2D
+var tex_guard: Texture2D
 var tex_death: Texture2D
 
 var anim_timer: float = 0.0
@@ -50,16 +50,16 @@ func _ready() -> void:
 	state_timer = 2.0 # 2 seconds initial breathing room
 
 func _load_textures() -> void:
-	tex_idle  = load(PATH_BASE + "Demon_A_Idle.png")       # 6 frames (100x100)
-	tex_walk  = load(PATH_BASE + "Demon_A_Walk.png")       # 8 frames (100x100)
-	tex_atk1  = load(PATH_BASE + "Demon_A_Attack01.png")   # 7 frames (100x100)
-	tex_atk2  = load(PATH_BASE + "Demon_A_Attack02.png")   # 7 frames (100x100)
-	tex_hurt  = load(PATH_BASE + "Demon_A_Hurt.png")       # 4 frames (100x100)
-	tex_death = load(PATH_BASE + "Demon_A_Death.png")      # 4 frames (100x100)
+	tex_idle  = load(PATH_BASE + "Warrior_Idle.png")       # 8 frames (192x192)
+	tex_walk  = load(PATH_BASE + "Warrior_Run.png")        # 6 frames (192x192)
+	tex_atk1  = load(PATH_BASE + "Warrior_Attack1.png")    # 4 frames (192x192 - broadsword slash)
+	tex_atk2  = load(PATH_BASE + "Warrior_Attack2.png")    # 4 frames (192x192 - leap ground smash)
+	tex_guard = load(PATH_BASE + "Warrior_Guard.png")      # 6 frames (192x192 - shield guard stance)
+	tex_death = load("res://art/tiny_swords/Particle FX/Explosion_01.png") # 8 frames (192x192)
 
 	if sprite:
 		sprite.texture = tex_idle
-		sprite.hframes = 6
+		sprite.hframes = 8
 		sprite.vframes = 1
 		sprite.frame = 0
 
@@ -74,7 +74,7 @@ func _physics_process(delta: float) -> void:
 
 	if GameManager.game_state == GameManager.GameState.DIALOGUE:
 		velocity = Vector2.ZERO
-		_play_anim(tex_idle, 6, 0.12, delta)
+		_play_anim(tex_idle, 8, 0.12, delta)
 		move_and_slide()
 		return
 
@@ -83,7 +83,7 @@ func _physics_process(delta: float) -> void:
 		State.WAITING:
 			state_timer -= delta
 			velocity = Vector2.ZERO
-			_play_anim(tex_idle, 6, 0.12, delta)
+			_play_anim(tex_idle, 8, 0.12, delta)
 			if state_timer <= 0.0:
 				current_state = State.CHASE
 				move_cooldown = 1.0
@@ -95,7 +95,7 @@ func _physics_process(delta: float) -> void:
 			var target := _get_combat_target()
 			if not target:
 				velocity = Vector2.ZERO
-				_play_anim(tex_idle, 6, 0.12, delta)
+				_play_anim(tex_idle, 8, 0.12, delta)
 				move_and_slide()
 				return
 
@@ -109,24 +109,24 @@ func _physics_process(delta: float) -> void:
 
 			# Select attack with fair cooldown
 			if move_cooldown <= 0.0:
-				if dist < 65.0:
+				if dist < 85.0:
 					_start_sweep_windup()
 					return
-				elif dist >= 65.0 and dist <= 160.0:
+				elif dist >= 85.0 and dist <= 190.0:
 					_start_slam_windup(dir)
 					return
 
 			# Menacing pursuit walk
 			velocity = dir * speed
-			_play_anim(tex_walk, 8, 0.10, delta)
+			_play_anim(tex_walk, 6, 0.11, delta)
 			move_and_slide()
 
 		State.WINDUP_SWEEP:
 			state_timer -= delta
 			velocity = Vector2.ZERO
 			sprite.texture = tex_atk1
-			sprite.hframes = 7
-			sprite.frame = 1 # Talon raised back
+			sprite.hframes = 4
+			sprite.frame = 0 # Blade raised back
 			if state_timer <= 0.0:
 				_execute_sweep()
 
@@ -134,17 +134,17 @@ func _physics_process(delta: float) -> void:
 			state_timer -= delta
 			velocity = Vector2.ZERO
 			sprite.texture = tex_atk2
-			sprite.hframes = 7
-			sprite.frame = 1 # Crouched charging hellfire
+			sprite.hframes = 4
+			sprite.frame = 0 # Crouched charging plunge
 			if state_timer <= 0.0:
 				_execute_slam()
 
 		State.STAGGERED:
 			state_timer -= delta
 			velocity = Vector2.ZERO
-			sprite.texture = tex_atk2
-			sprite.hframes = 7
-			sprite.frame = 5 # Landed recovery pose
+			sprite.texture = tex_guard
+			sprite.hframes = 6
+			sprite.frame = 3 # Guard-broken staggered stance
 			if state_timer <= 0.0:
 				current_state = State.RECOVERY
 				state_timer = 1.2
@@ -153,7 +153,7 @@ func _physics_process(delta: float) -> void:
 		State.RECOVERY:
 			state_timer -= delta
 			velocity = Vector2.ZERO
-			_play_anim(tex_idle, 6, 0.14, delta)
+			_play_anim(tex_idle, 8, 0.14, delta)
 			if state_timer <= 0.0:
 				current_state = State.CHASE
 				move_cooldown = 1.5
@@ -178,13 +178,13 @@ func _get_combat_target() -> Node2D:
 		return player
 	return get_tree().get_first_node_in_group("allies") as Node2D
 
-# --- Move 1: Talon Rake (Blockable with Shield!) ---
+# --- Move 1: Dread Broadsword Cleave (Blockable with Shield!) ---
 func _start_sweep_windup() -> void:
 	current_state = State.WINDUP_SWEEP
-	state_timer = 0.75 # 0.75s reaction window
+	state_timer = 0.80 # 0.80s reaction window
 	AudioManager.play_sfx("res://audio/sfx/woosh1.ogg", -4.0)
 
-	_callout_kaelen("He's lunging with his talons! Hold Right Click to block!")
+	_callout_kaelen("Heavy broadsword cleave! Hold [Right Click] to block!")
 
 	var tw := create_tween()
 	tw.tween_property(sprite, "modulate", Color(2.5, 1.8, 0.4), 0.2)
@@ -197,26 +197,26 @@ func _execute_sweep() -> void:
 	AudioManager.play_sfx("res://audio/sfx/knifeSlice.ogg", -2.0)
 
 	sprite.texture = tex_atk1
-	sprite.hframes = 7
-	for i in range(1, 7):
+	sprite.hframes = 4
+	for i in range(4):
 		if current_state == State.DEAD:
 			return
 		sprite.frame = i
-		if i == 3:
-			_hit_sweep_target(16, 60.0)
-		await get_tree().create_timer(0.05).timeout
+		if i == 1:
+			_hit_sweep_target(18, 90.0)
+		await get_tree().create_timer(0.08).timeout
 
 	if current_state != State.DEAD:
 		current_state = State.RECOVERY
-		state_timer = 1.4
+		state_timer = 1.3
 
-# --- Move 2: Hellfire Leap & Burst (Dodgeable, leaves him STAGGERED!) ---
+# --- Move 2: Abyssal Leap Plunge (Dodgeable, leaves him STAGGERED!) ---
 func _start_slam_windup(dir: Vector2) -> void:
 	current_state = State.WINDUP_SLAM
 	state_timer = 0.95 # 0.95s windup with red ground indicator
 	AudioManager.play_sfx("res://audio/sfx/woosh3.ogg", -2.0)
 
-	_callout_kaelen("Hellfire burst! Dodge roll sideways!")
+	_callout_kaelen("Abyssal leap plunge! Dodge roll sideways!")
 
 	var tw := create_tween()
 	tw.tween_property(sprite, "modulate", Color(3.0, 0.3, 0.3), 0.25)
@@ -229,25 +229,27 @@ func _execute_slam() -> void:
 	AudioManager.play_sfx("res://audio/sfx/explosionCrunch_000.ogg", 2.0)
 
 	sprite.texture = tex_atk2
-	sprite.hframes = 7
-	for i in range(2, 5):
+	sprite.hframes = 4
+	for i in range(4):
 		if current_state == State.DEAD:
 			return
 		sprite.frame = i
-		await get_tree().create_timer(0.045).timeout
+		if i == 2:
+			_hit_slam_target(32, 105.0)
+		await get_tree().create_timer(0.06).timeout
 
 	if current_state == State.DEAD:
 		return
 
-	_hit_slam_target(28, 70.0)
-
-	# Demon overcommits and recovers from the ground impact!
+	# General overcommits on the downward plunge and staggers!
 	current_state = State.STAGGERED
-	state_timer = 2.0
-	sprite.frame = 5
+	state_timer = 2.2
+	sprite.texture = tex_guard
+	sprite.hframes = 6
+	sprite.frame = 3
 	sprite.modulate = Color(0.7, 1.0, 2.0) # Glowing blue/gold stagger hue
 
-	_callout_kaelen("He's wide open! Strike now, brother!")
+	_callout_kaelen("His guard is broken! Strike now, brother!")
 
 func _hit_sweep_target(amount: int, reach: float) -> void:
 	if current_state == State.DEAD:
@@ -256,13 +258,13 @@ func _hit_sweep_target(amount: int, reach: float) -> void:
 	var player: Node2D = get_tree().get_first_node_in_group("player") as Node2D
 	if player:
 		var off := player.global_position - global_position
-		if off.length() <= reach and face_dir.dot(off.normalized()) > 0.1:
+		if off.length() <= reach and face_dir.dot(off.normalized()) > 0.05:
 			player.take_damage(amount, global_position)
 
 	var kaelen: Node2D = get_tree().get_first_node_in_group("allies") as Node2D
 	if kaelen and kaelen.has_method("take_damage"):
 		var koff := kaelen.global_position - global_position
-		if koff.length() <= reach and face_dir.dot(koff.normalized()) > 0.1:
+		if koff.length() <= reach and face_dir.dot(koff.normalized()) > 0.05:
 			kaelen.take_damage(amount / 2)
 
 func _hit_slam_target(amount: int, reach: float) -> void:
@@ -272,13 +274,13 @@ func _hit_slam_target(amount: int, reach: float) -> void:
 	var player: Node2D = get_tree().get_first_node_in_group("player") as Node2D
 	if player:
 		var off := player.global_position - global_position
-		if off.length() <= reach and face_dir.dot(off.normalized()) > 0.1:
+		if off.length() <= reach and face_dir.dot(off.normalized()) > 0.05:
 			player.take_damage(amount, global_position)
 
 	var kaelen: Node2D = get_tree().get_first_node_in_group("allies") as Node2D
 	if kaelen and kaelen.has_method("take_damage"):
 		var koff := kaelen.global_position - global_position
-		if koff.length() <= reach and face_dir.dot(koff.normalized()) > 0.1:
+		if koff.length() <= reach and face_dir.dot(koff.normalized()) > 0.05:
 			kaelen.take_damage(amount / 2)
 
 func take_damage(amount: int) -> void:
@@ -323,10 +325,15 @@ func _die() -> void:
 	AudioManager.play_sfx("res://audio/sfx/lowFrequency_explosion_000.ogg", 2.0)
 
 	sprite.texture = tex_death
-	sprite.hframes = 4
-	for i in range(4):
+	sprite.hframes = 8
+	for i in range(8):
 		sprite.frame = i
-		await get_tree().create_timer(0.14).timeout
+		await get_tree().create_timer(0.08).timeout
+
+	sprite.texture = tex_guard
+	sprite.hframes = 6
+	sprite.frame = 4
+	sprite.modulate = Color(0.65, 0.65, 0.65, 0.75)
 
 func _callout_kaelen(text: String) -> void:
 	var kaelen: Node2D = get_tree().get_first_node_in_group("allies") as Node2D
@@ -334,14 +341,14 @@ func _callout_kaelen(text: String) -> void:
 		kaelen.say_battle_callout(text)
 
 func _draw() -> void:
-	# Ground warning indicator during Hellfire Leap windup (scaled for 2.5 node scale)
+	# Ground warning indicator during Abyssal Leap windup
 	if current_state == State.WINDUP_SLAM:
 		var face_dir := Vector2.LEFT if sprite.flip_h else Vector2.RIGHT
-		var slam_center := face_dir * 28.0
-		draw_circle(slam_center, 24.0, Color(1.0, 0.2, 0.1, 0.28))
-		draw_arc(slam_center, 24.0, 0, TAU, 24, Color(1.0, 0.3, 0.1, 0.75), 1.8)
+		var slam_center := face_dir * 45.0
+		draw_circle(slam_center, 35.0, Color(1.0, 0.2, 0.1, 0.32))
+		draw_arc(slam_center, 35.0, 0, TAU, 28, Color(1.0, 0.3, 0.1, 0.85), 2.2)
 
 	# Floating Vulnerability text when staggered
 	elif current_state == State.STAGGERED:
 		var font: Font = ThemeDB.fallback_font
-		draw_string(font, Vector2(-45, -28), "VULNERABLE! (+50% DMG)", HORIZONTAL_ALIGNMENT_CENTER, -1, 10, Color(1.0, 0.9, 0.2, 1.0))
+		draw_string(font, Vector2(-60, -55), "GUARD BROKEN! (+50% DMG)", HORIZONTAL_ALIGNMENT_CENTER, -1, 10, Color(1.0, 0.9, 0.2, 1.0))

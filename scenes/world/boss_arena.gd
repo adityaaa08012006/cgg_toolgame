@@ -78,9 +78,9 @@ func _on_boss_hp_changed(curr: int, maximum: int) -> void:
 
 func _trigger_boss_intro() -> void:
 	dialogue_box.start_dialogue([
-		{"speaker": "General Gorgath", "text": "Puny worms! You dare challenge the vanguard of the Demon Lord? My dark talons and hellfire will incinerate your soul!"},
-		{"speaker": "Kaelen of Oakhaven", "text": "Stay composed, brother! Hold [Right Click] with your shield to block his talon strikes!"},
-		{"speaker": "Kaelen of Oakhaven", "text": "When he gathers energy for a hellfire leap, [Space / Shift] to dodge roll aside! He'll be wide open upon impact!"}
+		{"speaker": "General Gorgath", "text": "Puny worms! You dare challenge the vanguard of the Demon Lord? My abyssal broadsword will cleave you in twain!"},
+		{"speaker": "Kaelen of Oakhaven", "text": "Stay composed, brother! Hold [Right Click] with your shield to block his heavy broadsword cleaves!"},
+		{"speaker": "Kaelen of Oakhaven", "text": "When he leaps into the air for an abyssal plunge, [Space / Shift] to dodge roll aside! His guard will shatter upon impact!"}
 	])
 
 func _on_boss_defeated() -> void:
