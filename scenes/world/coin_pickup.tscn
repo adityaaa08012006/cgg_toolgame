@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scenes/world/coin_pickup.gd" id="1_coin_script"]
+[ext_resource type="Texture2D" path="res://art/tiles/tiny-dungeon/Tiles/tile_0126.png" id="2_coin_tex"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_coin"]
+radius = 10.0
+
+[node name="CoinPickup" type="Area2D"]
+collision_layer = 64
+collision_mask = 2
+script = ExtResource("1_coin_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("2_coin_tex")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_coin")

@@ -1,0 +1,63 @@
+[gd_scene load_steps=6 format=3 uid="uid://npc_base_01"]
+
+[ext_resource type="Script" path="res://scenes/npcs/npc_base.gd" id="1_npc_script"]
+[ext_resource type="Texture2D" path="res://art/characters/npcs/town-folk-2-free-v1.0/characters/night_watchman/walk.png" id="2_watchman_tex"]
+[ext_resource type="Texture2D" path="res://art/ui/input_prompts/Keyboard & Mouse/Default/keyboard_e_outline.png" id="3_key_e"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="4_font"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_npc"]
+radius = 6.0
+height = 18.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_trigger"]
+radius = 28.0
+
+[node name="NPC" type="StaticBody2D"]
+collision_layer = 32
+collision_mask = 2
+script = ExtResource("1_npc_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -20)
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("2_watchman_tex")
+hframes = 8
+vframes = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -2)
+shape = SubResource("CapsuleShape2D_npc")
+
+[node name="InteractArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractArea"]
+shape = SubResource("CircleShape2D_trigger")
+
+[node name="PromptContainer" type="HBoxContainer" parent="."]
+offset_left = -28.0
+offset_top = -42.0
+offset_right = 28.0
+offset_bottom = -18.0
+alignment = 1
+
+[node name="KeyBadge" type="TextureRect" parent="PromptContainer"]
+texture_filter = 1
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("3_key_e")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ActionLabel" type="Label" parent="PromptContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 15
+text = "Talk"

@@ -1,0 +1,96 @@
+[gd_scene load_steps=5 format=3 uid="uid://test_arena01"]
+
+[ext_resource type="PackedScene" path="res://scenes/player/hero.tscn" id="1_hero"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/demon.tscn" id="2_demon"]
+[ext_resource type="Texture2D" path="res://art/tiles/basic_tileset_and_assets_standard_v3.0/tiles/tiles-grass medium-32x32.png" id="3_grass"]
+[ext_resource type="Script" path="res://scenes/ui/test_hud.gd" id="4_hud_script"]
+
+[sub_resource type="GDScript" id="GDScript_arena"]
+script/source = "extends Node2D
+
+func _ready() -> void:
+	AudioManager.play_music(\"res://audio/music/Sad Town.ogg\", -8.0)
+	GameManager.start_doom_countdown(30.0)
+"
+
+[node name="TestArena" type="Node2D"]
+y_sort_enabled = true
+script = SubResource("GDScript_arena")
+
+[node name="BackgroundTile" type="Sprite2D" parent="."]
+z_index = -10
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(576, 324)
+scale = Vector2(40, 24)
+texture = ExtResource("3_grass")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="Hero" parent="." instance=ExtResource("1_hero")]
+position = Vector2(480, 320)
+
+[node name="Camera2D" type="Camera2D" parent="Hero"]
+zoom = Vector2(2.5, 2.5)
+position_smoothing_enabled = true
+
+[node name="Demon1" parent="." instance=ExtResource("2_demon")]
+position = Vector2(620, 280)
+
+[node name="Demon2" parent="." instance=ExtResource("2_demon")]
+position = Vector2(640, 360)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_hud_script")
+
+[node name="DoomLabel" type="Label" parent="CanvasLayer/HUD"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 24.0
+offset_right = 260.0
+offset_bottom = 56.0
+theme_override_font_sizes/font_size = 22
+text = "DOOM IN: 30.0s"
+
+[node name="CoinsLabel" type="Label" parent="CanvasLayer/HUD"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 60.0
+offset_right = 260.0
+offset_bottom = 92.0
+theme_override_font_sizes/font_size = 18
+text = "GOLD: 0"
+
+[node name="ObjectiveLabel" type="Label" parent="CanvasLayer/HUD"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 96.0
+offset_right = 450.0
+offset_bottom = 128.0
+theme_override_font_sizes/font_size = 16
+text = "Objective: Slay gate demons (0/2)"
+
+[node name="ControlsHint" type="Label" parent="CanvasLayer/HUD"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -45.0
+offset_right = 220.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 14
+text = "WASD: Move | Left-Click: Slash | Right-Click: Spell"
+horizontal_alignment = 1

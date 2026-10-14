@@ -1,0 +1,30 @@
+TOWN FOLK 2 FREE - LICENSE
+Version 1.0
+
+YOU MAY
+
+  - Use these assets in personal, educational and commercial projects.
+  - Use them in games you sell, on any platform, with no revenue limit.
+  - Modify, recolour, resize and remix them for your project.
+  - Use them in an unlimited number of your own projects.
+  - Let your team and contractors use them for work on your projects.
+
+YOU MAY NOT
+
+  - Resell or redistribute the assets themselves, whether as-is, modified,
+    or repacked into another asset pack, template, game kit or store listing.
+  - Give them away, bundle them or share them as files.
+  - Use them as training data for machine learning or generative models.
+  - Mint them as NFTs or sell them as digital collectibles.
+  - Claim authorship of the artwork itself.
+
+CREDIT
+
+  Not required. If you would like to, "Town Folk 2" is enough.
+
+NO WARRANTY
+
+  The assets are provided as-is, without warranty of any kind.
+
+The rights holder retains ownership of the artwork. This license grants
+usage rights, not ownership.

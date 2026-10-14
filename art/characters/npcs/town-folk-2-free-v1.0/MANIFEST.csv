@@ -1,0 +1,7 @@
+file,character,state,columns,rows,frames,frame_w,frame_h,sheet,row_order
+characters/night_watchman/walk.png,night_watchman,walk,8,4,32,63,63,504x252,"down,left,right,up"
+characters/night_watchman/attack.png,night_watchman,attack,8,4,32,63,63,504x252,"down,left,right,up"
+characters/errand_boy/walk.png,errand_boy,walk,8,4,32,65,65,520x260,"down,left,right,up"
+characters/errand_boy/attack.png,errand_boy,attack,8,4,32,65,65,520x260,"down,left,right,up"
+characters/potter/walk.png,potter,walk,8,4,32,62,62,496x248,"down,left,right,up"
+characters/potter/attack.png,potter,attack,8,4,32,62,62,496x248,"down,left,right,up"

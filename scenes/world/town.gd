@@ -1,0 +1,138 @@
+extends Node2D
+
+@onready var dialogue_box: DialogueBox = $CanvasLayer/DialogueBox
+@onready var smith_npc: NPC = $MasterTorren
+@onready var herbalist_npc: NPC = $Eldrin
+@onready var sentinel_npc: NPC = $Sentinel
+@onready var altar_trigger: Area2D = $GoddessAltarArea
+@onready var south_gate_trigger: Area2D = $SouthGateExitTrigger
+@onready var church_door_trigger: Area2D = $ChurchEntranceTrigger
+
+var altar_player_in_range: bool = false
+var demon_scene = preload("res://scenes/enemies/demon.tscn")
+
+func _ready() -> void:
+	AudioManager.play_music("res://audio/music/Sad Town.ogg", -6.0)
+
+	altar_trigger.body_entered.connect(_on_altar_entered)
+	altar_trigger.body_exited.connect(_on_altar_exited)
+	south_gate_trigger.body_entered.connect(_on_south_gate_entered)
+	church_door_trigger.body_entered.connect(_on_church_door_entered)
+
+	# Configure Custom Dialogue and Triggers for Town NPCs
+	_setup_smith_interaction()
+	_setup_herbalist_interaction()
+	_setup_sentinel_interaction()
+
+	QuestManager.quest_updated.connect(_on_quest_updated)
+	QuestManager.gate_unsealed.connect(_on_quest_completed)
+
+func _setup_smith_interaction() -> void:
+	smith_npc.npc_name = "Master Torren"
+	smith_npc.dialogue_lines = [
+		"Father Alden's prayer reached my anvil! The Demon Lord's apocalypse spell has begun!",
+		"Take this Valorous Knight Armor and the Sunfire Blade!",
+		"Two shadow demons guard the South Gate! Slay them, take their gold, and offer 100 gold at the Central Altar to unseal the road!"
+	]
+	smith_npc.dialogue_completed.connect(on_smith_equip_gear)
+
+func _setup_herbalist_interaction() -> void:
+	herbalist_npc.npc_name = "Eldrin the Herbalist"
+	herbalist_npc.dialogue_lines = [
+		"The wind carries the stench of brimstone... The Demon Lord's Doomsday curse is upon us.",
+		"Normal steel cannot pierce shadow beasts. Master Torren's forge lies just west.",
+		"Slay the fiends, harvest their 100 gold, and the Goddess will shatter the gate ward!"
+	]
+
+func _setup_sentinel_interaction() -> void:
+	sentinel_npc.npc_name = "Sentinel Gareth"
+	sentinel_npc.dialogue_lines = [
+		"Halt! The South Gate is sealed tight by dark sorcery. None may pass unarmed into slaughter.",
+		"Seek Master Torren at the forge to arm yourself before confronting the demons at the gate!"
+	]
+
+func _unhandled_input(event: InputEvent) -> void:
+	if altar_player_in_range and event.is_action_pressed("interact") and GameManager.game_state == GameManager.GameState.PLAYING:
+		_interact_altar()
+
+func _interact_altar() -> void:
+	if not GameManager.has_sword:
+		dialogue_box.start_dialogue([
+			{"speaker": "Goddess Statue", "text": "The sanctuary ward is silent. You must first seek Master Torren's forge to arm your spirit."}
+		])
+	elif QuestManager.demons_killed < QuestManager.required_demons:
+		var remaining := QuestManager.required_demons - QuestManager.demons_killed
+		dialogue_box.start_dialogue([
+			{"speaker": "Goddess Statue", "text": "The shadow fiends still roam the South Gate (%d remaining). Strike them down and return with their gold!" % remaining}
+		])
+	elif GameManager.player_coins < QuestManager.required_coins:
+		var needed := QuestManager.required_coins - GameManager.player_coins
+		dialogue_box.start_dialogue([
+			{"speaker": "Goddess Statue", "text": "You must collect the dropped demon gold! (%d more gold needed for the sacred offering)." % needed}
+		])
+	elif not QuestManager.quest_complete:
+		# Complete quest & unseal gate!
+		if QuestManager.offer_coins():
+			AudioManager.play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg")
+			dialogue_box.start_dialogue([
+				{"speaker": "Goddess Statue", "text": "The celestial light answers your offering! The dark barrier upon the South Gate is shattered! Go forth, Champion of Haven!"}
+			])
+	else:
+		dialogue_box.start_dialogue([
+			{"speaker": "Goddess Statue", "text": "The road to the Demon Lord's Domain lies open. Ride with the dawn!"}
+		])
+
+func on_smith_equip_gear() -> void:
+	if not GameManager.has_sword:
+		GameManager.has_sword = true
+		GameManager.has_armor = true
+		AudioManager.play_sfx("res://audio/kenney_rpg/Audio/metalClick.ogg")
+		GameManager.start_doom_countdown(30.0)
+
+		# Spawn the 2 demons at South Gate road (near gate y=1152)
+		var demon1 = demon_scene.instantiate()
+		demon1.position = Vector2(600, 1060)
+		add_child(demon1)
+
+		var demon2 = demon_scene.instantiate()
+		demon2.position = Vector2(680, 1060)
+		add_child(demon2)
+
+		QuestManager.quest_updated.emit("Slay the 2 Shadow Demons at the South Gate!")
+
+func _on_altar_entered(body: Node2D) -> void:
+	if body.is_in_group("player"):
+		altar_player_in_range = true
+		$GoddessAltarArea/PromptContainer.visible = true
+
+func _on_altar_exited(body: Node2D) -> void:
+	if body.is_in_group("player"):
+		altar_player_in_range = false
+		$GoddessAltarArea/PromptContainer.visible = false
+
+func _on_south_gate_entered(body: Node2D) -> void:
+	if body.is_in_group("player"):
+		if QuestManager.quest_complete:
+			# Victory of Level 1!
+			GameManager.stop_doom_countdown()
+			GameManager.set_game_state(GameManager.GameState.VICTORY)
+			dialogue_box.start_dialogue([
+				{"speaker": "Haven Town", "text": "LEVEL 1 COMPLETE! You broke through the South Gate and breached the Demon Lord's Ridge in 30 seconds!"}
+			])
+		else:
+			AudioManager.play_sfx("res://audio/sfx/impactPunch_heavy_000.ogg")
+
+func _on_church_door_entered(body: Node2D) -> void:
+	if body.is_in_group("player"):
+		get_tree().call_deferred("change_scene_to_file", "res://scenes/world/church_interior.tscn")
+
+func _on_quest_updated(text: String) -> void:
+	pass
+
+func _on_quest_completed() -> void:
+	if has_node("SouthGateBarrier"):
+		$SouthGateBarrier/CollisionShape2D.set_deferred("disabled", true)
+	elif has_node("SouthGateBarrierCol"):
+		$SouthGateBarrierCol.set_deferred("disabled", true)
+	if has_node("TownRenderer"):
+		get_node("TownRenderer").queue_redraw()

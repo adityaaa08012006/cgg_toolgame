@@ -1,0 +1,114 @@
+[gd_scene format=3 uid="uid://b0nmeck4020vw"]
+
+[ext_resource type="Script" uid="uid://cxx3wpuwy8n12" path="res://scenes/world/church_interior.gd" id="1_church_script"]
+[ext_resource type="PackedScene" path="res://scenes/player/hero.tscn" id="2_hero"]
+[ext_resource type="PackedScene" path="res://scenes/npcs/npc_base.tscn" id="3_npc"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="4_dlg_box"]
+[ext_resource type="Script" uid="uid://j1p38r1mssv6" path="res://scenes/world/church_renderer.gd" id="5_renderer"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_north_wall"]
+size = Vector2(960, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_west_wall"]
+size = Vector2(40, 720)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_east_wall"]
+size = Vector2(40, 720)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_altar_col"]
+size = Vector2(180, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pew"]
+size = Vector2(140, 28)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
+size = Vector2(120, 30)
+
+[node name="ChurchInterior" type="Node2D" unique_id=30362150]
+y_sort_enabled = true
+script = ExtResource("1_church_script")
+
+[node name="CathedralArchitecture" type="Node2D" parent="." unique_id=1664493408]
+z_index = -5
+script = ExtResource("5_renderer")
+
+[node name="ChurchCollisions" type="StaticBody2D" parent="." unique_id=652321907]
+collision_mask = 2
+
+[node name="NorthWall" type="CollisionShape2D" parent="ChurchCollisions" unique_id=1643522282]
+position = Vector2(640, 210)
+shape = SubResource("RectangleShape2D_north_wall")
+
+[node name="WestWall" type="CollisionShape2D" parent="ChurchCollisions" unique_id=1062335196]
+position = Vector2(150, 540)
+shape = SubResource("RectangleShape2D_west_wall")
+
+[node name="EastWall" type="CollisionShape2D" parent="ChurchCollisions" unique_id=509070839]
+position = Vector2(1130, 540)
+shape = SubResource("RectangleShape2D_east_wall")
+
+[node name="AltarDaisCol" type="CollisionShape2D" parent="ChurchCollisions" unique_id=987275233]
+position = Vector2(640, 235)
+shape = SubResource("RectangleShape2D_altar_col")
+
+[node name="PewL1" type="CollisionShape2D" parent="ChurchCollisions" unique_id=435420727]
+position = Vector2(432, 374)
+shape = SubResource("RectangleShape2D_pew")
+
+[node name="PewR1" type="CollisionShape2D" parent="ChurchCollisions" unique_id=1116680960]
+position = Vector2(848, 374)
+shape = SubResource("RectangleShape2D_pew")
+
+[node name="PewL2" type="CollisionShape2D" parent="ChurchCollisions" unique_id=721658120]
+position = Vector2(432, 474)
+shape = SubResource("RectangleShape2D_pew")
+
+[node name="PewR2" type="CollisionShape2D" parent="ChurchCollisions" unique_id=299464212]
+position = Vector2(848, 474)
+shape = SubResource("RectangleShape2D_pew")
+
+[node name="PewL3" type="CollisionShape2D" parent="ChurchCollisions" unique_id=1788601907]
+position = Vector2(432, 574)
+shape = SubResource("RectangleShape2D_pew")
+
+[node name="PewR3" type="CollisionShape2D" parent="ChurchCollisions" unique_id=897404707]
+position = Vector2(848, 574)
+shape = SubResource("RectangleShape2D_pew")
+
+[node name="PewL4" type="CollisionShape2D" parent="ChurchCollisions" unique_id=1710145650]
+position = Vector2(432, 674)
+shape = SubResource("RectangleShape2D_pew")
+
+[node name="PewR4" type="CollisionShape2D" parent="ChurchCollisions" unique_id=663978492]
+position = Vector2(848, 674)
+shape = SubResource("RectangleShape2D_pew")
+
+[node name="PriestAlden" parent="." unique_id=1952271138 instance=ExtResource("3_npc")]
+position = Vector2(640, 290)
+npc_name = "Father Alden"
+
+[node name="Hero" parent="." unique_id=333101772 instance=ExtResource("2_hero")]
+position = Vector2(640, 420)
+
+[node name="Camera2D" type="Camera2D" parent="Hero" unique_id=2004729953]
+offset = Vector2(0, -40)
+zoom = Vector2(1.7, 1.7)
+process_callback = 0
+limit_left = 130
+limit_top = 70
+limit_right = 1150
+limit_bottom = 880
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+
+[node name="DoorExitTrigger" type="Area2D" parent="." unique_id=228233403]
+position = Vector2(640, 840)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DoorExitTrigger" unique_id=1522146405]
+shape = SubResource("RectangleShape2D_door")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=614965915]
+
+[node name="DialogueBox" parent="CanvasLayer" unique_id=1984606706 groups=["dialogue_box"] instance=ExtResource("4_dlg_box")]

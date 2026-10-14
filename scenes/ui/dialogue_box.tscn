@@ -1,0 +1,105 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/dialogue_box.gd" id="1_dlg_script"]
+[ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/panel_brown.png" id="2_panel_tex"]
+[ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/buttonLong_brown.png" id="3_banner_tex"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="4_font_kenney"]
+[ext_resource type="Texture2D" path="res://art/ui/input_prompts/Keyboard & Mouse/Default/keyboard_e_outline.png" id="5_key_e"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wood"]
+texture = ExtResource("2_panel_tex")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_banner"]
+texture = ExtResource("3_banner_tex")
+texture_margin_left = 12.0
+texture_margin_top = 4.0
+texture_margin_right = 12.0
+texture_margin_bottom = 4.0
+
+[node name="DialogueBox" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_dlg_script")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -360.0
+offset_top = -160.0
+offset_right = 360.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxTexture_wood")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HeaderBox" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BannerPanel" type="PanelContainer" parent="PanelContainer/MarginContainer/VBoxContainer/HeaderBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_banner")
+
+[node name="SpeakerMargin" type="MarginContainer" parent="PanelContainer/MarginContainer/VBoxContainer/HeaderBox/BannerPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 2
+
+[node name="SpeakerLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/HeaderBox/BannerPanel/SpeakerMargin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_fonts/font = ExtResource("4_font_kenney")
+theme_override_font_sizes/font_size = 16
+text = "Father Alden"
+
+[node name="TextLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.92, 0.84, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.75)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("4_font_kenney")
+theme_override_font_sizes/font_size = 17
+text = "Without armor or weapon, you cannot face the darkness."
+autowrap_mode = 3
+
+[node name="FooterBox" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="KeyBadge" type="TextureRect" parent="PanelContainer/MarginContainer/VBoxContainer/FooterBox"]
+texture_filter = 1
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("5_key_e")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PromptLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/FooterBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.78, 0.65, 1)
+theme_override_fonts/font = ExtResource("4_font_kenney")
+theme_override_font_sizes/font_size = 14
+text = "continue"

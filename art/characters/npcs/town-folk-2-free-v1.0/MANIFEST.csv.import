@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://byd62uoi3ydg1"
+
+[deps]
+
+files=["res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.character.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.state.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.columns.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.rows.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.frames.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.frame.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.frame.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.sheet.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.row.translation"]
+
+source_file="res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.csv"
+dest_files=["res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.character.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.state.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.columns.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.rows.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.frames.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.frame.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.frame.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.sheet.translation", "res://art/characters/npcs/town-folk-2-free-v1.0/MANIFEST.row.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

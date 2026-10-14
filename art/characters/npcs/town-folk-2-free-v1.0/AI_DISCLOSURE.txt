@@ -1,0 +1,25 @@
+AI DISCLOSURE
+Town Folk 2 Free v1.0
+
+HOW THESE ASSETS WERE MADE
+
+  AI-generated, then curated, corrected, timed and sheeted by hand. Every
+  figure was chosen from candidates and the rejects thrown away; every
+  direction of every animation was watched one by one and either accepted or
+  ordered again; frame timing was evened out, and the sheets were assembled
+  to a single documented grid.
+
+WHY WE SAY SO
+
+  Some buyers do not want AI-generated art, and some storefronts require the
+  disclosure. Both are legitimate. You should be able to decide before you
+  spend money, not after.
+
+  This pack is labelled as AI-generated on every store we sell it on.
+
+WHAT IT MEANS FOR YOUR PROJECT
+
+  The usage rights in LICENSE.txt apply regardless. Note that some game jams,
+  storefronts and communities have their own rules about AI-generated content -
+  check the rules of any place you intend to publish before you build on these
+  assets.
