@@ -6,9 +6,31 @@ extends Node2D
 
 var gateway_reached: bool = false
 
+func _play_music(path: String, vol: float = -4.0) -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if am and am.has_method("play_music"):
+		am.play_music(path, vol)
+
+func _play_sfx(path: String, vol: float = 0.0) -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if am and am.has_method("play_sfx"):
+		am.play_sfx(path, vol)
+
+func _change_scene(path: String, title: String = "", subtitle: String = "") -> void:
+	var st = get_node_or_null("/root/SceneTransition")
+	if st and st.has_method("change_scene"):
+		st.change_scene(path, title, subtitle)
+	else:
+		get_tree().change_scene_to_file(path)
+
+func _emit_quest_update(text: String) -> void:
+	var qm = get_node_or_null("/root/QuestManager")
+	if qm and qm.has_signal("quest_updated"):
+		qm.quest_updated.emit(text)
+
 func _ready() -> void:
-	AudioManager.play_music("res://audio/music/Sad Descent.ogg", -5.0)
-	QuestManager.quest_updated.emit("Seek the lone warrior along the Ashen Ridge")
+	_play_music("res://audio/music/Sad Descent.ogg", -5.0)
+	_emit_quest_update("Seek the lone warrior along the Ashen Ridge")
 
 	if gateway_trigger:
 		gateway_trigger.body_entered.connect(_on_gateway_entered)
@@ -19,19 +41,19 @@ func _on_gateway_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		if kaelen and kaelen.current_state == KaelenCompanion.State.FOLLOWING:
 			gateway_reached = true
-			AudioManager.play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg")
+			_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg")
 			dialogue_box.start_dialogue([
 				{"speaker": "Kaelen of Oakhaven", "text": "This is it! The Vanguard Gateway! Gorgath's demon reinforcements are already swarming behind us!"},
 				{"speaker": "Kaelen of Oakhaven", "text": "I will hold the gateway and keep the demon horde at bay! Step into the sanctum, brother—slay General Gorgath!"},
 				{"speaker": "Narrator", "text": "CHAPTER II: THE ASHEN CRATER — GENERAL GORGATH"}
 			], func():
-				SceneTransition.change_scene(
+				_change_scene(
 					"res://scenes/world/boss_arena.tscn",
 					"The Ashen Crater",
 					"Sanctum of General Gorgath"
 				)
 			)
-			QuestManager.quest_updated.emit("Breach the Vanguard Gateway and confront General Gorgath!")
+			_emit_quest_update("Breach the Vanguard Gateway and confront General Gorgath!")
 
 		else:
 			dialogue_box.start_dialogue([

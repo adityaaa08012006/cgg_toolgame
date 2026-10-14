@@ -9,9 +9,29 @@ var boss_hud_container: Control
 var boss_hp_bar: TextureProgressBar
 var boss_title_label: Label
 
+func _play_music(path: String, vol: float = -4.0) -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if am and am.has_method("play_music"):
+		am.play_music(path, vol)
+
+func _play_sfx(path: String, vol: float = 0.0) -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if am and am.has_method("play_sfx"):
+		am.play_sfx(path, vol)
+
+func _show_area_banner(title: String, subtitle: String) -> void:
+	var st = get_node_or_null("/root/SceneTransition")
+	if st and st.has_method("show_area_banner"):
+		st.show_area_banner(title, subtitle)
+
+func _emit_quest_update(text: String) -> void:
+	var qm = get_node_or_null("/root/QuestManager")
+	if qm and qm.has_signal("quest_updated"):
+		qm.quest_updated.emit(text)
+
 func _ready() -> void:
-	AudioManager.play_music("res://audio/music/Infinite Descent.ogg", -4.0)
-	SceneTransition.show_area_banner("The Ashen Crater", "Sanctum of General Gorgath")
+	_play_music("res://audio/music/Infinite Descent.ogg", -4.0)
+	_show_area_banner("The Ashen Crater", "Sanctum of General Gorgath")
 	_build_tiny_swords_boss_hud()
 
 	if boss:
@@ -83,8 +103,8 @@ func _on_boss_defeated() -> void:
 		tw.tween_property(boss_hud_container, "modulate:a", 0.0, 1.0)
 		tw.tween_callback(boss_hud_container.queue_free)
 
-	QuestManager.quest_updated.emit("General Gorgath defeated! The demon vanguard has fallen!")
-	AudioManager.play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", 2.0)
+	_emit_quest_update("General Gorgath defeated! The demon vanguard has fallen!")
+	_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", 2.0)
 
 	# Spawn Doom Core Item in center
 	var core := Sprite2D.new()

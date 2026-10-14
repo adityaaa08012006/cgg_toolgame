@@ -70,6 +70,15 @@ func _load_textures() -> void:
 		sprite.frame = 0
 		_update_facing(true)
 
+func _is_in_dialogue() -> bool:
+	var gm = get_node_or_null("/root/GameManager")
+	return gm != null and gm.get("game_state") == 1 # GameState.DIALOGUE
+
+func _play_sfx(path: String, vol: float = 0.0) -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if am and am.has_method("play_sfx"):
+		am.play_sfx(path, vol)
+
 func _physics_process(delta: float) -> void:
 	if current_state == State.DEAD:
 		return
@@ -79,7 +88,7 @@ func _physics_process(delta: float) -> void:
 
 	queue_redraw()
 
-	if GameManager.game_state == GameManager.GameState.DIALOGUE:
+	if _is_in_dialogue():
 		velocity = Vector2.ZERO
 		_play_anim(tex_idle, 8, 0.12, delta)
 		move_and_slide()
@@ -183,7 +192,7 @@ func _update_facing(look_left: bool) -> void:
 func _start_cleave_windup() -> void:
 	current_state = State.WINDUP_SWEEP
 	state_timer = 0.70 # Telegraph reaction window
-	AudioManager.play_sfx("res://audio/sfx/woosh2.ogg", -2.0)
+	_play_sfx("res://audio/sfx/woosh2.ogg", -2.0)
 
 	var tw := create_tween()
 	tw.tween_property(sprite, "modulate", Color(2.5, 1.8, 0.4), 0.2)
@@ -193,7 +202,7 @@ func _execute_cleave() -> void:
 	if current_state == State.DEAD:
 		return
 	current_state = State.SWING_SWEEP
-	AudioManager.play_sfx("res://audio/sfx/knifeSlice.ogg", -2.0)
+	_play_sfx("res://audio/sfx/knifeSlice.ogg", -2.0)
 
 	sprite.texture = tex_atk
 	sprite.hframes = 10
@@ -214,7 +223,7 @@ func _start_spell_windup(target_pos: Vector2) -> void:
 	current_state = State.WINDUP_SPELL
 	state_timer = 0.90 # Ground warning window
 	spell_warn_pos = target_pos
-	AudioManager.play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", -2.0)
+	_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", -2.0)
 
 	var tw := create_tween()
 	tw.tween_property(sprite, "modulate", Color(2.2, 0.3, 0.3), 0.25)
@@ -224,7 +233,7 @@ func _execute_spell() -> void:
 	if current_state == State.DEAD:
 		return
 	current_state = State.CAST_SPELL
-	AudioManager.play_sfx("res://audio/sfx/explosionCrunch_000.ogg", 2.0)
+	_play_sfx("res://audio/sfx/explosionCrunch_000.ogg", 2.0)
 
 	# Erupt spell pillar at warned position
 	_spawn_spell_pillar(spell_warn_pos)
@@ -272,7 +281,7 @@ func _hit_cleave_target(amount: int, reach: float) -> void:
 func take_damage(amount: int) -> void:
 	if current_state == State.DEAD:
 		return
-	if GameManager.game_state == GameManager.GameState.DIALOGUE:
+	if _is_in_dialogue():
 		return
 	if hit_invulnerable_timer > 0.0:
 		return
@@ -281,7 +290,7 @@ func take_damage(amount: int) -> void:
 	var final_dmg: int = amount
 	if current_state == State.STAGGERED:
 		final_dmg = int(amount * 1.5) # +50% bonus damage when staggered
-		AudioManager.play_sfx("res://audio/sfx/impactPunch_heavy_000.ogg", -2.0)
+		_play_sfx("res://audio/sfx/impactPunch_heavy_000.ogg", -2.0)
 
 	hp -= final_dmg
 	hp_changed.emit(max(0, hp), max_hp)
@@ -308,7 +317,7 @@ func _die() -> void:
 		hitbox.set_deferred("monitorable", false)
 
 	defeated.emit()
-	AudioManager.play_sfx("res://audio/sfx/lowFrequency_explosion_000.ogg", 2.0)
+	_play_sfx("res://audio/sfx/lowFrequency_explosion_000.ogg", 2.0)
 
 	# 10-frame death dissolve
 	sprite.texture = tex_death

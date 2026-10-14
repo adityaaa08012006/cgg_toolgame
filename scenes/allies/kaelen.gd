@@ -55,19 +55,33 @@ func _setup_callout_ui() -> void:
 	callout_label.add_theme_constant_override("shadow_offset_y", 1)
 	add_child(callout_label)
 
+func _play_sfx(path: String, vol: float = 0.0) -> void:
+	var am = get_node_or_null("/root/AudioManager")
+	if am and am.has_method("play_sfx"):
+		am.play_sfx(path, vol)
+
+func _emit_quest_update(text: String) -> void:
+	var qm = get_node_or_null("/root/QuestManager")
+	if qm and qm.has_signal("quest_updated"):
+		qm.quest_updated.emit(text)
+
+func _is_in_dialogue() -> bool:
+	var gm = get_node_or_null("/root/GameManager")
+	return gm != null and gm.get("game_state") == 1 # GameState.DIALOGUE
+
 func say_battle_callout(text: String) -> void:
 	if not callout_label:
 		return
 	callout_label.text = text
 	callout_label.visible = true
 	callout_timer = 2.2
-	AudioManager.play_sfx("res://audio/sfx/confirmation_001.ogg", -12.0)
+	_play_sfx("res://audio/sfx/confirmation_001.ogg", -12.0)
 
 func _load_textures() -> void:
 	for d in [DIR_DOWN, DIR_UP, DIR_LEFT, DIR_RIGHT]:
 		idle_textures[d] = load("%s/IDLE/idle_%s.png" % [PATH_BASE, d])
 		run_textures[d] = load("%s/RUN/run_%s.png" % [PATH_BASE, d])
-		atk_textures[d] = load("%s/ATTACK 1/attack 1_%s.png" % [PATH_BASE, d])
+		atk_textures[d] = load("%s/ATTACK 1/attack1_%s.png" % [PATH_BASE, d])
 
 	if sprite:
 		sprite.texture = idle_textures[DIR_DOWN]
@@ -99,11 +113,11 @@ func start_dialogue() -> void:
 
 func _on_dialogue_finished() -> void:
 	current_state = State.FOLLOWING
-	QuestManager.quest_updated.emit("Advance with Kaelen to the Vanguard Gateway!")
+	_emit_quest_update("Advance with Kaelen to the Vanguard Gateway!")
 	kaelen_joined.emit()
 
 func _physics_process(delta: float) -> void:
-	if GameManager.game_state == GameManager.GameState.DIALOGUE:
+	if _is_in_dialogue():
 		velocity = Vector2.ZERO
 		_animate_idle(delta)
 		move_and_slide()
@@ -208,7 +222,7 @@ func _perform_ally_attack(target: Node2D) -> void:
 		sprite.hframes = 8
 		sprite.frame = 0
 
-	AudioManager.play_sfx("res://audio/sfx/sword1.ogg", -4.0)
+	_play_sfx("res://audio/sfx/sword1.ogg", -4.0)
 
 	for i in range(8):
 		if not is_instance_valid(target) or not target.is_inside_tree() or ("current_state" in target and target.current_state == 7):
@@ -227,7 +241,7 @@ func _perform_ally_attack(target: Node2D) -> void:
 		sprite.modulate = Color.WHITE
 
 func take_damage(amount: int) -> void:
-	AudioManager.play_sfx("res://audio/sfx/impactPunch_medium_000.ogg", -4.0)
+	_play_sfx("res://audio/sfx/impactPunch_medium_000.ogg", -4.0)
 	var tw := create_tween()
 	tw.tween_property(sprite, "modulate", Color(2.5, 0.3, 0.3), 0.1)
 	tw.tween_property(sprite, "modulate", Color.WHITE, 0.1)
