@@ -69,9 +69,6 @@ limit_top = 0
 limit_right = 1280
 limit_bottom = 960
 
-[node name="Kaelen" parent="." instance=ExtResource("4_kaelen")]
-position = Vector2(700, 520)
-
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="GameHUD" parent="CanvasLayer" instance=ExtResource("7_hud")]

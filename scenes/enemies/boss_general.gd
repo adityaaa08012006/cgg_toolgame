@@ -184,8 +184,6 @@ func _start_sweep_windup() -> void:
 	state_timer = 0.80 # 0.80s reaction window
 	AudioManager.play_sfx("res://audio/sfx/woosh1.ogg", -4.0)
 
-	_callout_kaelen("Heavy broadsword cleave! Hold [Right Click] to block!")
-
 	var tw := create_tween()
 	tw.tween_property(sprite, "modulate", Color(2.5, 1.8, 0.4), 0.2)
 	tw.tween_property(sprite, "modulate", Color.WHITE, 0.3)
@@ -215,8 +213,6 @@ func _start_slam_windup(dir: Vector2) -> void:
 	current_state = State.WINDUP_SLAM
 	state_timer = 0.95 # 0.95s windup with red ground indicator
 	AudioManager.play_sfx("res://audio/sfx/woosh3.ogg", -2.0)
-
-	_callout_kaelen("Abyssal leap plunge! Dodge roll sideways!")
 
 	var tw := create_tween()
 	tw.tween_property(sprite, "modulate", Color(3.0, 0.3, 0.3), 0.25)
@@ -248,8 +244,6 @@ func _execute_slam() -> void:
 	sprite.hframes = 6
 	sprite.frame = 3
 	sprite.modulate = Color(0.7, 1.0, 2.0) # Glowing blue/gold stagger hue
-
-	_callout_kaelen("His guard is broken! Strike now, brother!")
 
 func _hit_sweep_target(amount: int, reach: float) -> void:
 	if current_state == State.DEAD:
@@ -334,11 +328,6 @@ func _die() -> void:
 	sprite.hframes = 6
 	sprite.frame = 4
 	sprite.modulate = Color(0.65, 0.65, 0.65, 0.75)
-
-func _callout_kaelen(text: String) -> void:
-	var kaelen: Node2D = get_tree().get_first_node_in_group("allies") as Node2D
-	if kaelen and kaelen.has_method("say_battle_callout"):
-		kaelen.say_battle_callout(text)
 
 func _draw() -> void:
 	# Ground warning indicator during Abyssal Leap windup

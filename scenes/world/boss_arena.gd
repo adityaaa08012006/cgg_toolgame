@@ -2,7 +2,6 @@ extends Node2D
 
 @onready var dialogue_box: DialogueBox = $CanvasLayer/DialogueBox
 @onready var hero: Hero = $Hero
-@onready var kaelen: KaelenCompanion = $Kaelen
 @onready var boss: BossGeneral = $BossGeneral
 
 # Tiny Swords Boss HUD
@@ -15,14 +14,11 @@ func _ready() -> void:
 	SceneTransition.show_area_banner("The Ashen Crater", "Sanctum of General Gorgath")
 	_build_tiny_swords_boss_hud()
 
-	if kaelen:
-		kaelen.current_state = KaelenCompanion.State.FOLLOWING
-
 	if boss:
 		boss.hp_changed.connect(_on_boss_hp_changed)
 		boss.defeated.connect(_on_boss_defeated)
 
-	await get_tree().create_timer(0.6).timeout
+	await get_tree().create_timer(0.4).timeout
 	_trigger_boss_intro()
 
 func _build_tiny_swords_boss_hud() -> void:
@@ -78,17 +74,10 @@ func _on_boss_hp_changed(curr: int, maximum: int) -> void:
 
 func _trigger_boss_intro() -> void:
 	dialogue_box.start_dialogue([
-		{"speaker": "General Gorgath", "text": "Puny worms! You dare challenge the vanguard of the Demon Lord? My abyssal broadsword will cleave you in twain!"},
-		{"speaker": "Kaelen of Oakhaven", "text": "Stay composed, brother! Hold [Right Click] with your shield to block his heavy broadsword cleaves!"},
-		{"speaker": "Kaelen of Oakhaven", "text": "When he leaps into the air for an abyssal plunge, [Space / Shift] to dodge roll aside! His guard will shatter upon impact!"}
+		{"speaker": "General Gorgath", "text": "Puny mortal! You dare enter my sanctum? Your skull shall be crushed beneath my blade!"}
 	])
 
 func _on_boss_defeated() -> void:
-	if kaelen:
-		kaelen.is_combat_attacking = false
-		if kaelen.sprite:
-			kaelen.sprite.modulate = Color.WHITE
-
 	if boss_hud_container:
 		var tw := create_tween()
 		tw.tween_property(boss_hud_container, "modulate:a", 0.0, 1.0)
@@ -108,7 +97,5 @@ func _on_boss_defeated() -> void:
 	await get_tree().create_timer(1.2).timeout
 
 	dialogue_box.start_dialogue([
-		{"speaker": "Kaelen of Oakhaven", "text": "The behemoth is slain! We crushed the vanguard, brother!"},
-		{"speaker": "Kaelen of Oakhaven", "text": "The Doom Core he dropped unseals the high road to the Demon Lord's Citadel!"},
-		{"speaker": "Narrator", "text": "VICTORY! You have mastered dodging and shield blocking, toppling General Gorgath!"}
+		{"speaker": "Narrator", "text": "VICTORY! General Gorgath has fallen! The pathway to the Demon Lord's Citadel is now open!"}
 	])
