@@ -349,6 +349,9 @@ func take_damage(amount: int, _attacker_pos: Vector2 = Vector2.ZERO) -> void:
 
 	hp -= final_dmg
 	hp_changed.emit(max(0, hp), max_hp)
+	var num_col := Color(1.0, 0.9, 0.2) if current_state == State.STAGGERED else Color(1.0, 1.0, 1.0)
+	if SceneTransition and SceneTransition.has_method("spawn_damage_number"):
+		SceneTransition.spawn_damage_number(global_position + Vector2(0, -38), final_dmg, num_col)
 
 	var flash_color := Color(3.0, 1.8, 0.4) if current_state == State.STAGGERED else Color(2.5, 0.4, 0.4)
 	var tw := create_tween()

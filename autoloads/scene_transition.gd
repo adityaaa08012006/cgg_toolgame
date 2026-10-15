@@ -168,4 +168,29 @@ func hide_area_banner() -> void:
 	banner_tween.tween_property(banner_root, "modulate:a", 0.0, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	banner_tween.parallel().tween_property(banner_root, "offset_top", 6.0, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 
+func spawn_damage_number(world_pos: Vector2, amount: int, color: Color = Color.WHITE) -> void:
+	var label := Label.new()
+	label.text = str(amount)
+	label.top_level = true
+	label.global_position = world_pos + Vector2(randf_range(-14.0, 14.0), randf_range(-22.0, -12.0))
+	label.z_index = 200
+	if font_bold:
+		label.add_theme_font_override("font", font_bold)
+	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_color_override("font_color", color)
+	label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.95))
+	label.add_theme_constant_override("shadow_offset_x", 1)
+	label.add_theme_constant_override("shadow_offset_y", 1)
+	
+	var scene = get_tree().current_scene
+	if scene:
+		scene.add_child(label)
+		var tw = label.create_tween()
+		tw.set_parallel(true)
+		tw.tween_property(label, "position:y", label.position.y - 28.0, 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tw.tween_property(label, "scale", Vector2(1.3, 1.3), 0.08)
+		tw.chain().tween_property(label, "scale", Vector2(1.0, 1.0), 0.12)
+		tw.parallel().tween_property(label, "modulate:a", 0.0, 0.55).set_delay(0.2)
+		tw.chain().tween_callback(label.queue_free)
+
 

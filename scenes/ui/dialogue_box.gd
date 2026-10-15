@@ -21,6 +21,9 @@ const PORTRAIT_MAP: Dictionary = {
 var dialogue_queue: Array = []
 var current_line: int = -1
 var is_active: bool = false
+var is_typing: bool = false
+var type_tween: Tween
+var prompt_tween: Tween
 var on_finished_callback: Callable
 
 signal dialogue_started
@@ -39,16 +42,24 @@ func start_dialogue(lines: Array, callback: Callable = Callable()) -> void:
 	visible = true
 	GameManager.set_game_state(GameManager.GameState.DIALOGUE)
 	dialogue_started.emit()
+	_start_prompt_bounce()
 	advance()
 
-
 func advance() -> void:
+	if is_typing:
+		if type_tween:
+			type_tween.kill()
+		text_label.visible_ratio = 1.0
+		is_typing = false
+		return
+
 	current_line += 1
 	if current_line < dialogue_queue.size():
 		var entry: Dictionary = dialogue_queue[current_line]
 		var speaker_str: String = entry.get("speaker", "???")
 		speaker_label.text = speaker_str
 		text_label.text = entry.get("text", "")
+		text_label.visible_ratio = 0.0
 		
 		# Portrait lookup
 		var speaker_key: String = speaker_str.strip_edges().to_lower()
@@ -78,11 +89,34 @@ func advance() -> void:
 		else:
 			portrait_rect.visible = false
 			
+		# Typewriter animation
+		is_typing = true
+		if type_tween:
+			type_tween.kill()
+		var duration: float = clamp(float(text_label.text.length()) * 0.022, 0.35, 2.5)
+		type_tween = create_tween()
+		type_tween.tween_property(text_label, "visible_ratio", 1.0, duration)
+		type_tween.tween_callback(func(): is_typing = false)
+
 		AudioManager.play_sfx("res://audio/ui_audio/Audio/click3.ogg", -12.0)
 	else:
 		end_dialogue()
 
+func _start_prompt_bounce() -> void:
+	if prompt_tween:
+		prompt_tween.kill()
+	var footer = prompt_label.get_parent()
+	if footer:
+		prompt_tween = create_tween().set_loops()
+		prompt_tween.tween_property(footer, "position:y", 2.0, 0.45).as_relative()
+		prompt_tween.tween_property(footer, "position:y", -2.0, 0.45).as_relative()
+
 func end_dialogue() -> void:
+	if type_tween:
+		type_tween.kill()
+	if prompt_tween:
+		prompt_tween.kill()
+	is_typing = false
 	is_active = false
 	visible = false
 	GameManager.set_game_state(GameManager.GameState.PLAYING)

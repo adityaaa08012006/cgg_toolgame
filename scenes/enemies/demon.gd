@@ -120,6 +120,8 @@ func do_attack(target: Node2D) -> void:
 
 func take_damage(amount: int, attacker_pos: Vector2 = Vector2.ZERO) -> void:
 	hp -= amount
+	if SceneTransition and SceneTransition.has_method("spawn_damage_number"):
+		SceneTransition.spawn_damage_number(global_position + Vector2(0, -22), amount, Color(1.0, 1.0, 1.0))
 	var tween := create_tween()
 	tween.tween_property(sprite, "modulate", Color(3.0, 0.2, 0.2), 0.1)
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.1)

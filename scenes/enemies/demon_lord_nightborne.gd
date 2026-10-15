@@ -514,6 +514,8 @@ func take_damage(amount: int, _attacker_pos: Vector2 = Vector2.ZERO) -> void:
 		
 	hp = max(0, hp - amount)
 	hp_changed.emit(hp, max_hp)
+	if SceneTransition and SceneTransition.has_method("spawn_damage_number"):
+		SceneTransition.spawn_damage_number(global_position + Vector2(0, -35), amount, Color(1.0, 0.85, 0.2))
 	
 	# Damage flash
 	sprite.modulate = Color(2.5, 0.3, 0.3, 1.0)
