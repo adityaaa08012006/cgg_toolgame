@@ -19,9 +19,18 @@ size = Vector2(50, 960)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_east"]
 size = Vector2(50, 960)
 
+[sub_resource type="Environment" id="Environment_glow"]
+background_mode = 3
+glow_enabled = true
+glow_bloom = 0.25
+glow_blend_mode = 0
+
 [node name="ThroneRoom" type="Node2D"]
 y_sort_enabled = true
 script = ExtResource("1_throne_script")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_glow")
 
 [node name="AbyssalModulate" type="CanvasModulate" parent="."]
 color = Color(0.65, 0.45, 0.8, 1)

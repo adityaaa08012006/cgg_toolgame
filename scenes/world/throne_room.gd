@@ -128,11 +128,13 @@ func _on_boss_phase_changed(new_phase: int) -> void:
 		boss_title_label.add_theme_color_override("font_color", Color(1.0, 0.1, 0.2, 1.0))
 
 func _on_final_stand_triggered() -> void:
-	dialogue_box.start_dialogue([
-		{"speaker": "Kaelen's Soul", "text": "ARTHUR! I'VE RIPPED THROUGH HIS SHADOW CHAINS! I HAVE HIM PINNED!"},
-		{"speaker": "Kaelen's Soul", "text": "LEAP NOW! PRESS [Q] WITH THE SUNFIRE BLADE! SHATTER THE TETHER!"}
-	])
-	QuestManager.quest_updated.emit("LEAP STRIKE [Q]: Slay NightBorne with the Sunfire Blade!")
+	# Visual & audio feedback without stopping combat with dialogue boxes
+	AudioManager.play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", 3.0)
+	var cam = get_viewport().get_camera_2d()
+	if cam:
+		var ctw = create_tween()
+		ctw.tween_property(cam, "offset", Vector2(randf_range(-6, 6), randf_range(-6, 6)), 0.08)
+		ctw.tween_property(cam, "offset", Vector2.ZERO, 0.15)
 
 func _on_boss_defeated() -> void:
 	if boss_hud_container:

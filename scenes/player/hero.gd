@@ -407,9 +407,9 @@ func _execute_leap_impact() -> void:
 
 	# Visual ground slam shockwave ring
 	var slam_ring := Sprite2D.new()
-	slam_ring.texture = preload("res://art/ui/input_prompts/Keyboard & Mouse/Default/keyboard_e_outline.png")
-	slam_ring.modulate = Color(2.5, 1.8, 0.4, 0.9)
-	slam_ring.scale = Vector2(0.6, 0.6)
+	slam_ring.texture = preload("res://art/ui/rpg_expansion/PNG/iconCircle_beige.png")
+	slam_ring.modulate = Color(2.8, 2.2, 0.6, 0.9)
+	slam_ring.scale = Vector2(0.8, 0.5)
 	slam_ring.global_position = global_position + Vector2(0, 10)
 	get_parent().add_child(slam_ring)
 	var ring_tw := create_tween()

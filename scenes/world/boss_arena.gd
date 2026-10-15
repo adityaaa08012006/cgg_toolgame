@@ -245,44 +245,69 @@ func _on_boss_defeated() -> void:
 		_open_abyssal_rift()
 	)
 
+var portal_active: bool = false
+var portal_position: Vector2 = Vector2.ZERO
+
 func _open_abyssal_rift() -> void:
 	_emit_quest_update("Enter the Abyssal Rift to storm the Nether Citadel!")
 	_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", 2.0)
 	
+	portal_active = true
+	portal_position = Vector2(640, 480)
+	
 	var portal := Area2D.new()
-	portal.position = Vector2(640, 480)
+	portal.position = portal_position
+	portal.collision_layer = 0
+	portal.collision_mask = 2 # Player is on layer 2
+	portal.monitoring = true
 	
 	var spr := Sprite2D.new()
 	spr.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_brown.png")
 	spr.modulate = Color(2.5, 0.4, 3.5, 0.9)
-	spr.scale = Vector2(2.0, 2.0)
+	spr.scale = Vector2(2.2, 2.2)
 	portal.add_child(spr)
 	
 	var tw = spr.create_tween().set_loops()
-	tw.tween_property(spr, "scale", Vector2(2.4, 2.4), 0.6)
-	tw.tween_property(spr, "scale", Vector2(1.8, 1.8), 0.6)
+	tw.tween_property(spr, "scale", Vector2(2.6, 2.6), 0.6)
+	tw.tween_property(spr, "scale", Vector2(2.0, 2.0), 0.6)
 	
 	var col := CollisionShape2D.new()
 	var c := CircleShape2D.new()
-	c.radius = 45.0
+	c.radius = 70.0 # Generous trigger radius
 	col.shape = c
 	portal.add_child(col)
 	
 	var label := Label.new()
-	label.text = "ABYSSAL RIFT [ENTER]"
+	label.text = "ABYSSAL RIFT\n[WALK IN, CLICK, OR PRESS ENTER / E]"
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.position = Vector2(-150, -60)
-	label.custom_minimum_size = Vector2(300, 24)
-	label.add_theme_font_size_override("font_size", 12)
-	label.add_theme_color_override("font_color", Color(1.0, 0.6, 1.0))
-	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+	label.position = Vector2(-200, -75)
+	label.custom_minimum_size = Vector2(400, 36)
+	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_color_override("font_color", Color(1.0, 0.8, 1.0))
+	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
 	portal.add_child(label)
+	
+	var _trigger_transition = func():
+		if portal_active:
+			portal_active = false
+			SceneTransition.change_scene("res://scenes/ui/citadel_cutscene.tscn")
 	
 	portal.body_entered.connect(func(body):
 		if body.is_in_group("player"):
-			SceneTransition.change_scene(
-				"res://scenes/ui/citadel_cutscene.tscn"
-			)
+			_trigger_transition.call()
+	)
+	
+	portal.input_event.connect(func(_vp, event, _shape_idx):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_trigger_transition.call()
 	)
 	
 	add_child(portal)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if portal_active and hero:
+		if global_position.distance_to(portal_position) <= 220.0 or hero.global_position.distance_to(portal_position) <= 220.0:
+			if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept") or (event is InputEventKey and event.pressed and (event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER or event.keycode == KEY_E or event.keycode == KEY_SPACE)):
+				portal_active = false
+				SceneTransition.change_scene("res://scenes/ui/citadel_cutscene.tscn")
+				get_viewport().set_input_as_handled()
