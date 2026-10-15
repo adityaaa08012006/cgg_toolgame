@@ -151,10 +151,10 @@ func _trigger_boss_intro() -> void:
 
 	# Step 1: Pre-battle dialogue before the sacrifice
 	dialogue_box.start_dialogue([
-		{"speaker": "Kaelen of Oakhaven", "text": "Gorgath! The fiend who led the legion that massacred our village!"},
-		{"speaker": "General Gorgath", "text": "Hahaha! The surviving orphans of Oakhaven? Crawling together into my crater like cornered rats?"},
-		{"speaker": "Kaelen of Oakhaven", "text": "We are no longer victims, demon! Arthur carries the celestial star of retribution. We will burn your vanguard to ash!"},
-		{"speaker": "General Gorgath", "text": "Such touching defiance! A soul burning with unyielding brotherly love... The Demon Lord's dark altar will feast upon your devotion!"}
+		{"speaker": "Kaelen of Oakhaven", "text": "Gorgath... Look at his blade, Arthur. It still reeks of the ash from our town square."},
+		{"speaker": "General Gorgath", "text": "Two little rats from the embers... I remember the taste of your burning home. Your people screamed so sweetly before the silence took them."},
+		{"speaker": "Kaelen of Oakhaven", "text": "You will answer for every drop of their blood, monster! Arthur carries the starlight of retribution—we will carve your black heart out!"},
+		{"speaker": "General Gorgath", "text": "Retribution? No... A boy glowing with stolen divine embers, and a brother burning with blind, pathetic devotion. The Demon Lord's dark altar will relish breaking a soul like yours."}
 	], func():
 		_execute_portal_sacrifice_sequence(kaelen)
 	)
@@ -188,9 +188,9 @@ func _execute_portal_sacrifice_sequence(kaelen: Node2D) -> void:
 	_play_sfx("res://audio/sfx/woosh3.ogg", 2.0)
 
 	dialogue_box.start_dialogue([
-		{"speaker": "Kaelen of Oakhaven", "text": "Aaargh! Abyssal chains! The rift is dragging me into the Demon Lord's inner sanctum!"},
-		{"speaker": "Kaelen of Oakhaven", "text": "Arthur! Look at me! Don't let him break your focus! Slay Gorgath, shatter their vanguard, and come find me!"},
-		{"speaker": "Kaelen of Oakhaven", "text": "I will endure whatever torture they bring! PROMISE ME YOU WILL SURVIVE, BROTHER!"}
+		{"speaker": "Kaelen of Oakhaven", "text": "ARTHUR! GET BACK—DO NOT TOUCH THE SHADOWS!"},
+		{"speaker": "Kaelen of Oakhaven", "text": "The chains... they're ripping into my soul! Arthur, don't look at me—LOOK AT GORGATH!"},
+		{"speaker": "Kaelen of Oakhaven", "text": "Remember what we swore! You survive this fight! Shatter his vanguard and come kick down the citadel doors! PROMISE ME, ARTHUR! PROMISE M—"}
 	], func():
 		_finalize_sacrifice(kaelen, portal)
 	)
@@ -213,7 +213,7 @@ func _finalize_sacrifice(kaelen: Node2D, portal: Sprite2D) -> void:
 	await get_tree().create_timer(0.3).timeout
 
 	dialogue_box.start_dialogue([
-		{"speaker": "General Gorgath", "text": "A touching farewell! Your brother now kneels before our Dark Master's throne. Now bleed, little champion!"}
+		{"speaker": "General Gorgath", "text": "His screaming soul now kneels in chains at our Master's throne. Now, little fallen star... let us see what you bleed."}
 	])
 
 func _on_boss_defeated() -> void:
@@ -236,7 +236,9 @@ func _on_boss_defeated() -> void:
 	await get_tree().create_timer(1.2).timeout
 
 	dialogue_box.start_dialogue([
-		{"speaker": "Narrator", "text": "General Gorgath dissolves into shadow. Through the shattered vanguard archway, Kaelen's faint voice echoes across the rift..."},
-		{"speaker": "Kaelen's Whisper", "text": "Arthur... I can feel your victory... I'm holding on... don't give up... come find me..."},
-		{"speaker": "Narrator", "text": "The path to the Demon Lord's Citadel is unsealed. With the Sunfire Blade in hand, you march into the abyss to save your brother."}
+		{"speaker": "Narrator", "text": "General Gorgath's scythe shatters against the frozen rock. His dark essence dissipates into the biting wind, leaving the crater in deafening silence."},
+		{"speaker": "Narrator", "text": "Embedded in the ash lies Kaelen's dropped silver pendant, pulsing faintly with a familiar, desperate warmth."},
+		{"speaker": "Kaelen's Whisper", "text": "Arthur... I can feel it... his scythe broke... I knew you wouldn't let him win..."},
+		{"speaker": "Kaelen's Whisper", "text": "It's so cold down here in the dark... but your light reached me... I'm holding on, brother... don't you dare give up on me..."},
+		{"speaker": "Narrator", "text": "Clutching the pendant, Arthur raises the Sunfire Blade toward the black spires of the Demon Lord's Citadel. He will not lose his brother twice."}
 	])

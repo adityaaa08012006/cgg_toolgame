@@ -101,11 +101,11 @@ func start_dialogue() -> void:
 	var dlg_box = get_tree().get_first_node_in_group("dialogue_box")
 	if dlg_box:
 		var lines: Array[Dictionary] = [
-			{"speaker": "Kaelen of Oakhaven", "text": "Arthur?! You're standing... by the light, you really survived!"},
-			{"speaker": "Kaelen of Oakhaven", "text": "When Oakhaven burned to ash, I thought I'd lost you. I dragged you through the embers with my bare hands, refusing to let you die."},
-			{"speaker": "Kaelen of Oakhaven", "text": "And then the sky split open... That falling celestial star blessed your heart, brother! The heavens answered our prayers."},
-			{"speaker": "Kaelen of Oakhaven", "text": "We swore as boys we would protect each other to our last breath. My sword and shield belong to your light, Arthur."},
-			{"speaker": "Kaelen of Oakhaven", "text": "General Gorgath and the vanguard are just beyond the ridge. Together, as brothers, let's avenge our fallen home!"}
+			{"speaker": "Kaelen of Oakhaven", "text": "Arthur...? By the gods... let me look at you. You're actually walking."},
+			{"speaker": "Kaelen of Oakhaven", "text": "When the roofs caved in at Oakhaven... I pulled you out of the burning beams. You were so cold, brother. I carried you through the smoke screaming at you not to die."},
+			{"speaker": "Kaelen of Oakhaven", "text": "And then that star fell... It struck your chest and brought color back to your skin. I knew right then the heavens weren't going to let our story end in ashes."},
+			{"speaker": "Kaelen of Oakhaven", "text": "Our village is gone, Arthur. Everyone we knew is buried in the rubble. But as long as you and I are breathing, Oakhaven is still standing."},
+			{"speaker": "Kaelen of Oakhaven", "text": "General Gorgath's vanguard is fortified right past this ridge. Take a breath, brother. We breach their gate together!"}
 		]
 		dlg_box.start_dialogue(lines, _on_dialogue_finished)
 	else:

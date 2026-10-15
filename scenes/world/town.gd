@@ -30,26 +30,26 @@ func _ready() -> void:
 func _setup_smith_interaction() -> void:
 	smith_npc.npc_name = "Master Torren"
 	smith_npc.dialogue_lines = [
-		"Arthur, you're awake! Praise the celestial light! Kaelen carried you here through fire and ash after Oakhaven fell.",
-		"Before marching north to the pass, he grabbed my anvil and made me swear I would forge your arms before the demon horde strikes.",
-		"Take this Sunfire Blade and Knight's Plate—infused with the very star-ember that spared your life!",
-		"Two shadow demons guard the South Gate! Slay them, gather 100 gold, and purify the Goddess Altar to unseal the road to Kaelen!"
+		"Arthur! You're actually on your feet... By the gods, Kaelen wasn't speaking in delirium after all.",
+		"That boy came in here with blistered hands, slammed a fragment of the fallen celestial meteor onto my anvil, and swore he'd hold me responsible if I didn't have steel ready for you.",
+		"Here—take this Sunfire Blade and Knight's Armor. The blade holds the living warmth of the star that chose you.",
+		"Demonic fiends have cut off the southern road. Cut them down, bring their corrupted cores to the Goddess Altar to cleanse the barrier, and go catch that stubborn fool before he gets himself killed!"
 	]
 	smith_npc.dialogue_completed.connect(on_smith_equip_gear)
 
 func _setup_herbalist_interaction() -> void:
 	herbalist_npc.npc_name = "Eldrin the Herbalist"
 	herbalist_npc.dialogue_lines = [
-		"The falling star that struck the cathedral was a miracle from the ancients, young knight.",
-		"Kaelen's devotion to you is unbreakable—he watched your pulse for days without closing his eyes.",
-		"Arm yourself at the forge, break the demon blockade at the South Gate, and ride to your brother's side!"
+		"The stench of sulfur is choking the valley, child. Those things roaming the road... they are not of this earth.",
+		"When Kaelen passed through, I begged him to let me treat his burns. He just shook his head, looking toward the mountains as if his own life didn't matter.",
+		"He kept repeating: 'Arthur is alive. That's all that matters.' Be safe, young knight... a bond like that is rarer than gold."
 	]
 
 func _setup_sentinel_interaction() -> void:
 	sentinel_npc.npc_name = "Sentinel Gareth"
 	sentinel_npc.dialogue_lines = [
-		"Halt, Arthur! Kaelen gave strict orders not to let you through unarmed. Master Torren's forge lies west.",
-		"Once you are armed, slay the demons, purify the Goddess Altar, and we will open the way to the Ashen Ridge!"
+		"Arthur, stay back! I cannot let you through the barricade unarmed—two of my guards fell to those shadow beasts minutes ago.",
+		"Torren has your gear waiting at the forge. Get your sword in hand, help us purge the road, and I will open the gates to the Mountain Pass!"
 	]
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -59,28 +59,26 @@ func _unhandled_input(event: InputEvent) -> void:
 func _interact_altar() -> void:
 	if not GameManager.has_sword:
 		dialogue_box.start_dialogue([
-			{"speaker": "Goddess Statue", "text": "The sanctuary ward is silent. You must first seek Master Torren's forge to arm your spirit."}
+			{"speaker": "Ancient Shrine", "text": "A solemn warmth emanates from the moss-covered stones. The shrine remains silent, awaiting a warrior clad in steel."}
 		])
 	elif QuestManager.demons_killed < QuestManager.required_demons:
-		var remaining := QuestManager.required_demons - QuestManager.demons_killed
 		dialogue_box.start_dialogue([
-			{"speaker": "Goddess Statue", "text": "The shadow fiends still roam the South Gate (%d remaining). Strike them down and return with their gold!" % remaining}
+			{"speaker": "Ancient Shrine", "text": "The shrine's sacred flame trembles under a suffocating dark curse. The shadow beasts ravaging the South Gate must be slain to lift the miasma."}
 		])
 	elif GameManager.player_coins < QuestManager.required_coins:
-		var needed := QuestManager.required_coins - GameManager.player_coins
 		dialogue_box.start_dialogue([
-			{"speaker": "Goddess Statue", "text": "You must collect the dropped demon gold! (%d more gold needed for the sacred offering)." % needed}
+			{"speaker": "Ancient Shrine", "text": "The altar requires the radiant tribute gathered from the fallen fiends to dispel the abyssal seal upon the gate."}
 		])
 	elif not QuestManager.quest_complete:
 		# Complete quest & unseal gate!
 		if QuestManager.offer_coins():
 			AudioManager.play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg")
 			dialogue_box.start_dialogue([
-				{"speaker": "Goddess Statue", "text": "The celestial light answers your offering! The dark barrier upon the South Gate is shattered! Go forth, Champion of Haven!"}
+				{"speaker": "Ancient Shrine", "text": "The shrine blazes with blinding celestial sunlight! A ringing shockwave surges across Haven, shattering the demonic curse upon the South Gate. The road north to Kaelen is open!"}
 			])
 	else:
 		dialogue_box.start_dialogue([
-			{"speaker": "Goddess Statue", "text": "The road to the Demon Lord's Domain lies open. Ride with the dawn!"}
+			{"speaker": "Ancient Shrine", "text": "The barrier is broken. The mountain wind calls to you... ride to your brother's side."}
 		])
 
 func on_smith_equip_gear() -> void:

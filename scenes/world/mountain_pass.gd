@@ -43,9 +43,11 @@ func _on_gateway_entered(body: Node2D) -> void:
 			gateway_reached = true
 			_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg")
 			dialogue_box.start_dialogue([
-				{"speaker": "Kaelen of Oakhaven", "text": "The iron portal of the Citadel... Arthur, look at me before we cross this threshold."},
-				{"speaker": "Kaelen of Oakhaven", "text": "Seeing you alive gave me my soul back. Whatever darkness lies beyond these gates, know that I am proud to fight beside you."},
-				{"speaker": "Kaelen of Oakhaven", "text": "For Oakhaven, and for Haven... let's end Gorgath's reign of terror together, brother!"},
+				{"speaker": "Kaelen of Oakhaven", "text": "Arthur... wait. Pause for a second before we push this gate open."},
+				{"speaker": "Kaelen of Oakhaven", "text": "Beyond this archway lies Gorgath's sanctum. He isn't like the beasts down in the valley. He tore through our knights in seconds."},
+				{"speaker": "Kaelen of Oakhaven", "text": "If anything goes wrong in there... if only one of us can make it out... you do not look back. You hear me? The heavens chose you, Arthur."},
+				{"speaker": "Kaelen of Oakhaven", "text": "Don't give me that stubborn look. We swore an oath on the riverbank when we were ten years old: brothers to the very end. I am proud to fight beside you."},
+				{"speaker": "Kaelen of Oakhaven", "text": "Draw your steel, Arthur. Let's make that monster answer for Oakhaven."},
 				{"speaker": "Narrator", "text": "CHAPTER II: THE ASHEN CRATER — GENERAL GORGATH"}
 			], func():
 				_change_scene(
@@ -58,6 +60,6 @@ func _on_gateway_entered(body: Node2D) -> void:
 
 		else:
 			dialogue_box.start_dialogue([
-				{"speaker": "Vanguard Gateway", "text": "The iron portal is sealed by demon dread wards. You cannot breach it alone without an ally."}
+				{"speaker": "Iron Gateway", "text": "The massive iron gates are barred tight against the mountain rock. You cannot breach this fortress without Kaelen by your side."}
 			])
 
