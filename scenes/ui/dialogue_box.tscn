@@ -33,9 +33,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -440.0
-offset_top = -172.0
-offset_right = 440.0
+offset_left = -450.0
+offset_top = -196.0
+offset_right = 450.0
 offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 0
@@ -54,7 +54,7 @@ theme_override_constants/separation = 16
 
 [node name="PortraitRect" type="TextureRect" parent="PanelContainer/MarginContainer/MainHBox"]
 texture_filter = 1
-custom_minimum_size = Vector2(110, 110)
+custom_minimum_size = Vector2(116, 116)
 layout_mode = 2
 size_flags_vertical = 4
 expand_mode = 1
@@ -74,27 +74,27 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_banner")
 
 [node name="SpeakerMargin" type="MarginContainer" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox/HeaderBox/BannerPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 2
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 3
 
 [node name="SpeakerLabel" type="Label" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox/HeaderBox/BannerPanel/SpeakerMargin"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
 theme_override_fonts/font = ExtResource("4_font_bold")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "Father Alden"
 
 [node name="TextLabel" type="Label" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox"]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.92, 0.84, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.75)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_fonts/font = ExtResource("6_font_regular")
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 24
 text = "Without armor or weapon, you cannot face the darkness."
 autowrap_mode = 3
 
@@ -104,7 +104,7 @@ alignment = 2
 
 [node name="KeyBadge" type="TextureRect" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox/FooterBox"]
 texture_filter = 1
-custom_minimum_size = Vector2(16, 16)
+custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("5_key_e")
@@ -115,5 +115,5 @@ stretch_mode = 5
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.78, 0.65, 1)
 theme_override_fonts/font = ExtResource("4_font_bold")
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 14
 text = "continue"

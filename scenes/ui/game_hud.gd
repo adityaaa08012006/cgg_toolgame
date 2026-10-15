@@ -7,9 +7,6 @@ extends CanvasLayer
 @onready var skill_label: Label = find_child("SkillVal", true, false) as Label
 @onready var objective_label: Label = find_child("ObjectiveText", true, false) as Label
 
-var ghost_hp_bar: TextureProgressBar
-var ghost_tween: Tween
-
 func _ready() -> void:
 	GameManager.player_health_changed.connect(_on_health_changed)
 	GameManager.coins_changed.connect(_on_coins_changed)
@@ -20,13 +17,6 @@ func _ready() -> void:
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_signal("leap_cooldown_changed"):
 		player.leap_cooldown_changed.connect(_on_leap_cooldown_changed)
-
-	if hp_bar:
-		ghost_hp_bar = hp_bar.duplicate() as TextureProgressBar
-		ghost_hp_bar.name = "GhostHPBar"
-		ghost_hp_bar.modulate = Color(1.0, 0.85, 0.25, 0.9)
-		hp_bar.get_parent().add_child(ghost_hp_bar)
-		hp_bar.get_parent().move_child(ghost_hp_bar, hp_bar.get_index())
 
 	_on_health_changed(GameManager.player_hp, GameManager.player_max_hp)
 	_on_coins_changed(GameManager.player_coins)
@@ -52,20 +42,8 @@ func _on_leap_cooldown_changed(remaining: float, _max_dur: float) -> void:
 
 func _on_health_changed(hp: int, max_hp: int) -> void:
 	if hp_bar:
-		var old_val: float = hp_bar.value
 		hp_bar.max_value = max_hp
 		hp_bar.value = hp
-		
-		if ghost_hp_bar:
-			ghost_hp_bar.max_value = max_hp
-			if hp < old_val:
-				if ghost_tween:
-					ghost_tween.kill()
-				ghost_tween = create_tween()
-				ghost_tween.tween_interval(0.25)
-				ghost_tween.tween_property(ghost_hp_bar, "value", float(hp), 0.45).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-			else:
-				ghost_hp_bar.value = hp
 	if hp_label:
 		hp_label.text = str(hp) + "/" + str(max_hp)
 		if hp <= int(float(max_hp) * 0.25):

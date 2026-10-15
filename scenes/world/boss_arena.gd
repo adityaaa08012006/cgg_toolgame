@@ -94,7 +94,7 @@ func _build_tiny_swords_boss_hud() -> void:
 	boss_title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	if game_font:
 		boss_title_label.add_theme_font_override("font", game_font)
-	boss_title_label.add_theme_font_size_override("font_size", 13)
+	boss_title_label.add_theme_font_size_override("font_size", 15)
 	boss_title_label.add_theme_color_override("font_color", Color(1.0, 0.45, 0.35))
 	boss_title_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
 	boss_title_label.add_theme_constant_override("shadow_offset_x", 1)
@@ -135,7 +135,7 @@ func _build_tiny_swords_boss_hud() -> void:
 	boss_hp_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	if game_font:
 		boss_hp_label.add_theme_font_override("font", game_font)
-	boss_hp_label.add_theme_font_size_override("font_size", 12)
+	boss_hp_label.add_theme_font_size_override("font_size", 14)
 	boss_hp_label.add_theme_color_override("font_color", Color(1.0, 0.95, 0.85))
 	boss_hp_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
 	boss_hp_label.add_theme_constant_override("shadow_offset_x", 1)
@@ -178,27 +178,97 @@ func _trigger_boss_intro() -> void:
 		_execute_portal_sacrifice_sequence(kaelen)
 	)
 
+func _create_portal_light_texture() -> Texture2D:
+	var grad := Gradient.new()
+	grad.colors = PackedColorArray([Color.WHITE, Color(1, 1, 1, 0.0)])
+	grad.offsets = PackedFloat32Array([0.0, 1.0])
+	var gtex := GradientTexture2D.new()
+	gtex.gradient = grad
+	gtex.fill = GradientTexture2D.FILL_RADIAL
+	gtex.fill_from = Vector2(0.5, 0.5)
+	gtex.fill_to = Vector2(0.5, 0.0)
+	gtex.width = 128
+	gtex.height = 128
+	return gtex
+
 func _execute_portal_sacrifice_sequence(kaelen: Node2D) -> void:
 	if boss and boss.has_method("play_cast_cutscene"):
 		boss.play_cast_cutscene(3.0)
 
 	_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", 2.0)
 
-	# Spawn swirling abyss portal beneath Kaelen
-	var portal := Sprite2D.new()
-	portal.texture = load("res://art/characters/enemies/Bringer-Of-Death/sheets/Spell.png")
-	portal.hframes = 16
-	portal.frame = 8
-	portal.scale = Vector2(2.8, 1.4)
-	portal.modulate = Color(2.5, 0.2, 3.0, 0.0)
-	portal.global_position = kaelen.global_position + Vector2(0, 10)
-	portal.z_index = kaelen.z_index - 1
-	add_child(portal)
+	# Container node for full animated portal effects
+	var portal_node := Node2D.new()
+	portal_node.name = "AbyssSacrificePortal"
+	portal_node.global_position = kaelen.global_position + Vector2(0, 12)
+	portal_node.z_index = kaelen.z_index - 1
+	add_child(portal_node)
 
-	var ptw := create_tween()
-	ptw.parallel().tween_property(portal, "modulate:a", 1.0, 0.4)
-	ptw.parallel().tween_property(portal, "scale", Vector2(3.2, 1.6), 0.5)
+	# 1. Dark Void Base Disc (Rotating & Pulsing)
+	var base_disc := Sprite2D.new()
+	base_disc.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_brown.png")
+	base_disc.modulate = Color(0.12, 0.02, 0.25, 0.95)
+	base_disc.scale = Vector2(0.1, 0.05)
+	portal_node.add_child(base_disc)
 
+	var dtw := base_disc.create_tween()
+	dtw.tween_property(base_disc, "scale", Vector2(3.4, 1.7), 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	var rot_tw := base_disc.create_tween().set_loops()
+	rot_tw.tween_property(base_disc, "rotation", TAU, 3.0)
+
+	# 2. Animated Spell Spritesheet (16 frames of dark sorcery eruption)
+	var spell_frames := SpriteFrames.new()
+	spell_frames.add_animation("swirl")
+	spell_frames.set_animation_speed("swirl", 14.0)
+	spell_frames.set_animation_loop("swirl", true)
+	var spell_tex: Texture2D = load("res://art/characters/enemies/Bringer-Of-Death/sheets/Spell.png")
+	if spell_tex:
+		for f in range(16):
+			var at := AtlasTexture.new()
+			at.atlas = spell_tex
+			at.region = Rect2(f * 140, 0, 140, 93)
+			spell_frames.add_frame("swirl", at)
+
+	var anim_spell := AnimatedSprite2D.new()
+	anim_spell.sprite_frames = spell_frames
+	anim_spell.play("swirl")
+	anim_spell.scale = Vector2(0.2, 0.1)
+	anim_spell.position = Vector2(0, -18)
+	anim_spell.modulate = Color(2.6, 0.35, 3.2, 0.95) # Intense luminous abyssal violet
+	portal_node.add_child(anim_spell)
+
+	var stw := anim_spell.create_tween()
+	stw.tween_property(anim_spell, "scale", Vector2(2.5, 1.4), 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	# 3. Dynamic Radiant PointLight2D illuminating Kaelen from below
+	var p_light := PointLight2D.new()
+	p_light.texture = _create_portal_light_texture()
+	p_light.color = Color(1.8, 0.3, 2.5, 1.0)
+	p_light.energy = 0.0
+	p_light.texture_scale = 2.4
+	p_light.position = Vector2(0, -10)
+	portal_node.add_child(p_light)
+
+	var ltw := p_light.create_tween().set_loops()
+	ltw.tween_property(p_light, "energy", 2.0, 0.35)
+	ltw.tween_property(p_light, "energy", 1.3, 0.35)
+
+	# 4. Swirling Void Particle Vortex
+	var vortex_parts := CPUParticles2D.new()
+	vortex_parts.amount = 40
+	vortex_parts.lifetime = 0.9
+	vortex_parts.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	vortex_parts.emission_sphere_radius = 45.0
+	vortex_parts.gravity = Vector2(0, -70)
+	vortex_parts.orbit_velocity_min = 1.6
+	vortex_parts.orbit_velocity_max = 2.8
+	vortex_parts.scale_amount_min = 2.0
+	vortex_parts.scale_amount_max = 4.5
+	vortex_parts.color = Color(2.4, 0.4, 3.0, 0.9)
+	portal_node.add_child(vortex_parts)
+
+	# Lift Kaelen and engulf in shadow
 	var ktw := kaelen.create_tween()
 	ktw.parallel().tween_property(kaelen, "position:y", kaelen.position.y - 28.0, 0.6)
 	ktw.parallel().tween_property(kaelen, "modulate", Color(0.6, 0.1, 1.4, 0.9), 0.6)
@@ -211,23 +281,25 @@ func _execute_portal_sacrifice_sequence(kaelen: Node2D) -> void:
 		{"speaker": "Kaelen of Oakhaven", "text": "The chains... they're ripping into my soul! Arthur, don't look at me—LOOK AT GORGATH!"},
 		{"speaker": "Kaelen of Oakhaven", "text": "Remember what we swore! You survive this fight! Shatter his vanguard and come kick down the citadel doors! PROMISE ME, ARTHUR! PROMISE M—"}
 	], func():
-		_finalize_sacrifice(kaelen, portal)
+		_finalize_sacrifice(kaelen, portal_node)
 	)
 
-func _finalize_sacrifice(kaelen: Node2D, portal: Sprite2D) -> void:
+func _finalize_sacrifice(kaelen: Node2D, portal_node: Node2D) -> void:
 	_play_sfx("res://audio/sfx/explosionCrunch_000.ogg", 3.0)
 
 	var itw := create_tween()
-	itw.parallel().tween_property(kaelen, "scale", Vector2.ZERO, 0.35)
-	itw.parallel().tween_property(kaelen, "rotation", 3.14, 0.35)
-	itw.parallel().tween_property(portal, "scale", Vector2.ZERO, 0.4)
-	itw.parallel().tween_property(portal, "modulate", Color(4.0, 0.5, 5.0, 0.0), 0.4)
+	itw.set_parallel(true)
+	itw.tween_property(kaelen, "scale", Vector2.ZERO, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	itw.tween_property(kaelen, "rotation", 6.28, 0.4)
+	itw.tween_property(kaelen, "position:y", kaelen.position.y + 35.0, 0.4)
+	itw.tween_property(portal_node, "scale", Vector2.ZERO, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	itw.tween_property(portal_node, "modulate", Color(4.0, 0.5, 5.0, 0.0), 0.45)
 
 	await itw.finished
 	if is_instance_valid(kaelen):
 		kaelen.queue_free()
-	if is_instance_valid(portal):
-		portal.queue_free()
+	if is_instance_valid(portal_node):
+		portal_node.queue_free()
 
 	await get_tree().create_timer(0.3).timeout
 
@@ -286,29 +358,82 @@ func _open_abyssal_rift() -> void:
 	portal.collision_mask = 2 # Player is on layer 2
 	portal.monitoring = true
 	
-	var spr := Sprite2D.new()
-	spr.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_brown.png")
-	spr.modulate = Color(2.5, 0.4, 3.5, 0.9)
-	spr.scale = Vector2(2.2, 2.2)
-	portal.add_child(spr)
-	
-	var tw = spr.create_tween().set_loops()
-	tw.tween_property(spr, "scale", Vector2(2.6, 2.6), 0.6)
-	tw.tween_property(spr, "scale", Vector2(2.0, 2.0), 0.6)
+	# 1. Dark Void Core Disc (Rotating)
+	var core_disc := Sprite2D.new()
+	core_disc.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_brown.png")
+	core_disc.modulate = Color(0.08, 0.01, 0.18, 0.95)
+	core_disc.scale = Vector2(2.5, 2.5)
+	portal.add_child(core_disc)
+
+	var core_rot := core_disc.create_tween().set_loops()
+	core_rot.tween_property(core_disc, "rotation", -TAU, 4.0)
+
+	# 2. Swirling Animated Magic Flame Ring
+	var spell_frames := SpriteFrames.new()
+	spell_frames.add_animation("swirl")
+	spell_frames.set_animation_speed("swirl", 14.0)
+	spell_frames.set_animation_loop("swirl", true)
+	var spell_tex: Texture2D = load("res://art/characters/enemies/Bringer-Of-Death/sheets/Spell.png")
+	if spell_tex:
+		for f in range(16):
+			var at := AtlasTexture.new()
+			at.atlas = spell_tex
+			at.region = Rect2(f * 140, 0, 140, 93)
+			spell_frames.add_frame("swirl", at)
+
+	var anim_rift := AnimatedSprite2D.new()
+	anim_rift.sprite_frames = spell_frames
+	anim_rift.play("swirl")
+	anim_rift.scale = Vector2(2.6, 1.5)
+	anim_rift.position = Vector2(0, -10)
+	anim_rift.modulate = Color(2.6, 0.4, 3.6, 0.95)
+	portal.add_child(anim_rift)
+
+	var rtw := anim_rift.create_tween().set_loops()
+	rtw.tween_property(anim_rift, "scale", Vector2(2.9, 1.7), 0.7).set_trans(Tween.TRANS_SINE)
+	rtw.tween_property(anim_rift, "scale", Vector2(2.4, 1.4), 0.7).set_trans(Tween.TRANS_SINE)
+
+	# 3. Dynamic Radiant PointLight2D
+	var p_light := PointLight2D.new()
+	p_light.texture = _create_portal_light_texture()
+	p_light.color = Color(1.9, 0.3, 2.6, 1.0)
+	p_light.energy = 1.6
+	p_light.texture_scale = 2.6
+	portal.add_child(p_light)
+
+	var ltw := p_light.create_tween().set_loops()
+	ltw.tween_property(p_light, "energy", 2.2, 0.5)
+	ltw.tween_property(p_light, "energy", 1.4, 0.5)
+
+	# 4. Swirling Inward CPUParticles2D
+	var particles := CPUParticles2D.new()
+	particles.amount = 45
+	particles.lifetime = 1.0
+	particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	particles.emission_sphere_radius = 55.0
+	particles.gravity = Vector2.ZERO
+	particles.orbit_velocity_min = 2.0
+	particles.orbit_velocity_max = 3.5
+	particles.radial_accel_min = -60.0
+	particles.radial_accel_max = -30.0
+	particles.scale_amount_min = 2.0
+	particles.scale_amount_max = 4.0
+	particles.color = Color(2.2, 0.5, 3.2, 0.9)
+	portal.add_child(particles)
 	
 	var col := CollisionShape2D.new()
 	var c := CircleShape2D.new()
-	c.radius = 70.0 # Generous trigger radius
+	c.radius = 75.0
 	col.shape = c
 	portal.add_child(col)
 	
 	var label := Label.new()
 	label.text = "ABYSSAL RIFT\n[WALK IN, CLICK, OR PRESS ENTER / E]"
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.position = Vector2(-200, -75)
-	label.custom_minimum_size = Vector2(400, 36)
-	label.add_theme_font_size_override("font_size", 13)
-	label.add_theme_color_override("font_color", Color(1.0, 0.8, 1.0))
+	label.position = Vector2(-220, -82)
+	label.custom_minimum_size = Vector2(440, 40)
+	label.add_theme_font_size_override("font_size", 15)
+	label.add_theme_color_override("font_color", Color(1.0, 0.85, 1.0))
 	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
 	portal.add_child(label)
 	

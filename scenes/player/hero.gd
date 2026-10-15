@@ -428,16 +428,12 @@ func _execute_leap_impact() -> void:
 		boss = get_parent().get_node_or_null("BossGeneral")
 	if boss and boss.has_method("take_damage") and global_position.distance_to(boss.global_position) <= slam_radius + 45.0:
 		boss.take_damage(slam_dmg)
-		if SceneTransition and SceneTransition.has_method("spawn_damage_number"):
-			SceneTransition.spawn_damage_number(boss.global_position, slam_dmg, Color(1.0, 0.9, 0.2))
 
 	# Check regular enemies
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	for enemy in enemies:
 		if enemy != boss and enemy.has_method("take_damage") and global_position.distance_to(enemy.global_position) <= slam_radius:
 			enemy.take_damage(slam_dmg)
-			if SceneTransition and SceneTransition.has_method("spawn_damage_number"):
-				SceneTransition.spawn_damage_number(enemy.global_position, slam_dmg, Color(1.0, 0.9, 0.2))
 
 func take_damage(amount: int, attacker_pos: Vector2 = Vector2.ZERO) -> void:
 	if is_rolling or is_leaping:	
@@ -471,6 +467,4 @@ func take_damage(amount: int, attacker_pos: Vector2 = Vector2.ZERO) -> void:
 func _on_attack_hitbox_body_entered(body: Node2D) -> void:
 	if body.is_in_group("enemies") and body.has_method("take_damage"):
 		body.take_damage(attack_damage)
-		if SceneTransition and SceneTransition.has_method("spawn_damage_number"):
-			SceneTransition.spawn_damage_number(body.global_position, attack_damage, Color(1.0, 1.0, 1.0))
 		AudioManager.play_sfx("res://audio/kenney_rpg/Audio/knifeSlice.ogg", -4.0)

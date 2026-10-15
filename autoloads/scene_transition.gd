@@ -176,7 +176,7 @@ func spawn_damage_number(world_pos: Vector2, amount: int, color: Color = Color.W
 	label.z_index = 200
 	if font_bold:
 		label.add_theme_font_override("font", font_bold)
-	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_font_size_override("font_size", 18)
 	label.add_theme_color_override("font_color", color)
 	label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.95))
 	label.add_theme_constant_override("shadow_offset_x", 1)
