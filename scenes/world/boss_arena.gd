@@ -241,4 +241,50 @@ func _on_boss_defeated() -> void:
 		{"speaker": "Kaelen's Whisper", "text": "Arthur... I can feel it... his scythe broke... I knew you wouldn't let him win..."},
 		{"speaker": "Kaelen's Whisper", "text": "It's so cold down here in the dark... but your light reached me... I'm holding on, brother... don't you dare give up on me..."},
 		{"speaker": "Narrator", "text": "Clutching the pendant, Arthur raises the Sunfire Blade toward the black spires of the Demon Lord's Citadel. He will not lose his brother twice."}
-	])
+	], func():
+		_open_abyssal_rift()
+	)
+
+func _open_abyssal_rift() -> void:
+	_emit_quest_update("Enter the Abyssal Rift to storm the Nether Citadel!")
+	_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", 2.0)
+	
+	var portal := Area2D.new()
+	portal.position = Vector2(640, 480)
+	
+	var spr := Sprite2D.new()
+	spr.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_brown.png")
+	spr.modulate = Color(2.5, 0.4, 3.5, 0.9)
+	spr.scale = Vector2(2.0, 2.0)
+	portal.add_child(spr)
+	
+	var tw = spr.create_tween().set_loops()
+	tw.tween_property(spr, "scale", Vector2(2.4, 2.4), 0.6)
+	tw.tween_property(spr, "scale", Vector2(1.8, 1.8), 0.6)
+	
+	var col := CollisionShape2D.new()
+	var c := CircleShape2D.new()
+	c.radius = 45.0
+	col.shape = c
+	portal.add_child(col)
+	
+	var label := Label.new()
+	label.text = "ABYSSAL RIFT [ENTER]"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.position = Vector2(-150, -60)
+	label.custom_minimum_size = Vector2(300, 24)
+	label.add_theme_font_size_override("font_size", 12)
+	label.add_theme_color_override("font_color", Color(1.0, 0.6, 1.0))
+	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
+	portal.add_child(label)
+	
+	portal.body_entered.connect(func(body):
+		if body.is_in_group("player"):
+			SceneTransition.change_scene(
+				"res://scenes/world/throne_room.tscn",
+				"The Nether Citadel",
+				"Throne of NightBorne"
+			)
+	)
+	
+	add_child(portal)
