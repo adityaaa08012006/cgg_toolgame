@@ -38,9 +38,7 @@ func _on_start_pressed() -> void:
 	tw.tween_property($UIContainer, "modulate:a", 0.0, 0.4)
 	await tw.finished
 	SceneTransition.change_scene(
-		"res://scenes/world/church_interior.tscn",
-		"Sanctuary of Light",
-		"Cathedral of Father Alden"
+		"res://scenes/ui/intro_cutscenes.tscn"
 	)
 
 func _on_controls_pressed() -> void:
