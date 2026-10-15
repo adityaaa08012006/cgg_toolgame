@@ -8,6 +8,8 @@ extends Node2D
 var boss_hud_container: Control
 var boss_title_label: Label
 var boss_hp_bar: TextureProgressBar
+var boss_ghost_bar: TextureProgressBar
+var boss_ghost_tween: Tween
 var boss_hp_label: Label
 
 func _play_music(path: String, vol: float = -4.0) -> void:
@@ -52,6 +54,8 @@ func _build_tiny_swords_boss_hud() -> void:
 	boss_hud_container.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	boss_hud_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	boss_hud_container.offset_top = 16.0
+	boss_hud_container.visible = false
+	boss_hud_container.modulate.a = 0.0
 	$CanvasLayer.add_child(boss_hud_container)
 
 	var game_font: FontFile = load("res://art/fonts/Fonts/Kenney Future.ttf")
@@ -117,6 +121,11 @@ func _build_tiny_swords_boss_hud() -> void:
 	boss_hp_bar.size = Vector2(380, 20)
 	boss_hp_bar.max_value = boss.max_hp if boss else 550
 	boss_hp_bar.value = boss_hp_bar.max_value
+
+	boss_ghost_bar = boss_hp_bar.duplicate() as TextureProgressBar
+	boss_ghost_bar.name = "BossGhostHPBar"
+	boss_ghost_bar.modulate = Color(1.0, 0.85, 0.3, 0.9)
+	bar_container.add_child(boss_ghost_bar)
 	bar_container.add_child(boss_hp_bar)
 
 	# Numeric HP Label superimposed over bar
@@ -135,9 +144,19 @@ func _build_tiny_swords_boss_hud() -> void:
 
 func _on_boss_hp_changed(curr: int, maximum: int) -> void:
 	if boss_hp_bar:
+		var prev: float = boss_hp_bar.value
 		boss_hp_bar.max_value = maximum
-		var tw := create_tween()
-		tw.tween_property(boss_hp_bar, "value", float(curr), 0.18).set_trans(Tween.TRANS_CUBIC)
+		boss_hp_bar.value = curr
+		if boss_ghost_bar:
+			boss_ghost_bar.max_value = maximum
+			if curr < prev:
+				if boss_ghost_tween:
+					boss_ghost_tween.kill()
+				boss_ghost_tween = create_tween()
+				boss_ghost_tween.tween_interval(0.25)
+				boss_ghost_tween.tween_property(boss_ghost_bar, "value", float(curr), 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+			else:
+				boss_ghost_bar.value = curr
 	if boss_hp_label:
 		boss_hp_label.text = "%d / %d HP" % [max(0, curr), maximum]
 
@@ -214,7 +233,12 @@ func _finalize_sacrifice(kaelen: Node2D, portal: Sprite2D) -> void:
 
 	dialogue_box.start_dialogue([
 		{"speaker": "General Gorgath", "text": "His screaming soul now kneels in chains at our Master's throne. Now, little fallen star... let us see what you bleed."}
-	])
+	], func():
+		if boss_hud_container:
+			boss_hud_container.visible = true
+			var tw := create_tween()
+			tw.tween_property(boss_hud_container, "modulate:a", 1.0, 0.6)
+	)
 
 func _on_boss_defeated() -> void:
 	AudioManager.play_music("res://audio/music/power_to_the_hero.ogg", -2.5)
