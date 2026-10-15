@@ -12,7 +12,12 @@ var altar_player_in_range: bool = false
 var demon_scene = preload("res://scenes/enemies/demon.tscn")
 
 func _ready() -> void:
-	AudioManager.play_music("res://audio/music/Sad Town.ogg", -6.0)
+	if GameManager.is_epilogue:
+		AudioManager.play_music("res://audio/music/Sad Descent.ogg", -4.0)
+		SceneTransition.show_area_banner("Haven Town — Dawn of Peace", "In Everlasting Honor of Kaelen")
+		QuestManager.quest_updated.emit("Lay Kaelen's silver pendant upon the Ancient Shrine.")
+	else:
+		AudioManager.play_music("res://audio/music/Sad Town.ogg", -6.0)
 
 	altar_trigger.body_entered.connect(_on_altar_entered)
 	altar_trigger.body_exited.connect(_on_altar_exited)
@@ -29,34 +34,62 @@ func _ready() -> void:
 
 func _setup_smith_interaction() -> void:
 	smith_npc.npc_name = "Master Torren"
-	smith_npc.dialogue_lines = [
-		"Arthur! You're actually on your feet... By the gods, Kaelen wasn't speaking in delirium after all.",
-		"That boy came in here with blistered hands, slammed a fragment of the fallen celestial meteor onto my anvil, and swore he'd hold me responsible if I didn't have steel ready for you.",
-		"Here—take this Sunfire Blade and Knight's Armor. The blade holds the living warmth of the star that chose you.",
-		"Demonic fiends have cut off the southern road. Cut them down, bring their corrupted cores to the Goddess Altar to cleanse the barrier, and go catch that stubborn fool before he gets himself killed!"
-	]
-	smith_npc.dialogue_completed.connect(on_smith_equip_gear)
+	if GameManager.is_epilogue:
+		smith_npc.dialogue_lines = [
+			"You brought back peace, lad... but the price was etched on your face the moment you walked through that gate.",
+			"Kaelen was a true son of Oakhaven. His memory will live in every blade I forge."
+		]
+	else:
+		smith_npc.dialogue_lines = [
+			"Arthur! You're actually on your feet... By the gods, Kaelen wasn't speaking in delirium after all.",
+			"That boy came in here with blistered hands, slammed a fragment of the fallen celestial meteor onto my anvil, and swore he'd hold me responsible if I didn't have steel ready for you.",
+			"Here—take this Sunfire Blade and Knight's Armor. The blade holds the living warmth of the star that chose you.",
+			"Demonic fiends have cut off the southern road. Cut them down, bring their corrupted cores to the Goddess Altar to cleanse the barrier, and go catch that stubborn fool before he gets himself killed!"
+		]
+		smith_npc.dialogue_completed.connect(on_smith_equip_gear)
 
 func _setup_herbalist_interaction() -> void:
 	herbalist_npc.npc_name = "Eldrin the Herbalist"
-	herbalist_npc.dialogue_lines = [
-		"The stench of sulfur is choking the valley, child. Those things roaming the road... they are not of this earth.",
-		"When Kaelen passed through, I begged him to let me treat his burns. He just shook his head, looking toward the mountains as if his own life didn't matter.",
-		"He kept repeating: 'Arthur is alive. That's all that matters.' Be safe, young knight... a bond like that is rarer than gold."
-	]
+	if GameManager.is_epilogue:
+		herbalist_npc.dialogue_lines = [
+			"The black clouds have dissolved... look up, Arthur. The sun hasn't shone this brightly in thirty years.",
+			"Oakhaven's sacrifice saved us all. We will never forget what you two gave for this valley."
+		]
+	else:
+		herbalist_npc.dialogue_lines = [
+			"The stench of sulfur is choking the valley, child. Those things roaming the road... they are not of this earth.",
+			"When Kaelen passed through, I begged him to let me treat his burns. He just shook his head, looking toward the mountains as if his own life didn't matter.",
+			"He kept repeating: 'Arthur is alive. That's all that matters.' Be safe, young knight... a bond like that is rarer than gold."
+		]
 
 func _setup_sentinel_interaction() -> void:
 	sentinel_npc.npc_name = "Sentinel Gareth"
-	sentinel_npc.dialogue_lines = [
-		"Arthur, stay back! I cannot let you through the barricade unarmed—two of my guards fell to those shadow beasts minutes ago.",
-		"Torren has your gear waiting at the forge. Get your sword in hand, help us purge the road, and I will open the gates to the Mountain Pass!"
-	]
+	if GameManager.is_epilogue:
+		sentinel_npc.dialogue_lines = [
+			"Arthur... the gates of Haven stand open for you forever. Every soldier salutes you and Kaelen.",
+			"Take heart, champion. His light will guide our kingdom for generations."
+		]
+	else:
+		sentinel_npc.dialogue_lines = [
+			"Arthur, stay back! I cannot let you through the barricade unarmed—two of my guards fell to those shadow beasts minutes ago.",
+			"Torren has your gear waiting at the forge. Get your sword in hand, help us purge the road, and I will open the gates to the Mountain Pass!"
+		]
 
 func _unhandled_input(event: InputEvent) -> void:
 	if altar_player_in_range and event.is_action_pressed("interact") and GameManager.game_state == GameManager.GameState.PLAYING:
 		_interact_altar()
 
 func _interact_altar() -> void:
+	if GameManager.is_epilogue:
+		AudioManager.play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", 2.0)
+		dialogue_box.start_dialogue([
+			{"speaker": "Ancient Shrine", "text": "Arthur kneels in the soft grass before the moss-covered stones."},
+			{"speaker": "Ancient Shrine", "text": "Gently, he places Kaelen's warm silver pendant into the sacred basin. A radiant pillar of golden sunlight descends, enveloping the shrine in peace."},
+			{"speaker": "Ancient Shrine", "text": "High above, the sanctuary bells toll across the green valley. Oakhaven's oath is fulfilled: neither brother fell alone."},
+			{"speaker": "Narrator", "text": "DEMO COMPLETE — Thank you for playing Half-Minute Hero: The Starlight Oath!"}
+		])
+		return
+
 	if not GameManager.has_sword:
 		dialogue_box.start_dialogue([
 			{"speaker": "Ancient Shrine", "text": "A solemn warmth emanates from the moss-covered stones. The shrine remains silent, awaiting a warrior clad in steel."}

@@ -167,8 +167,8 @@ func _on_boss_defeated() -> void:
 	)
 
 func _return_to_town_epilogue() -> void:
+	GameManager.is_epilogue = true
+	GameManager.stop_doom_countdown()
 	SceneTransition.change_scene(
-		"res://scenes/world/town.tscn",
-		"Haven Town — Dawn of Peace",
-		"In Everlasting Honor of Kaelen"
+		"res://scenes/ui/dawn_cutscene.tscn"
 	)

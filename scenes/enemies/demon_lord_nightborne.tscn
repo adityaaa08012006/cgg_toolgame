@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://b5k8n7x9a3q2m"]
+[gd_scene format=3 uid="uid://b5k8n7yaa3q2m"]
 
 [ext_resource type="Script" path="res://scenes/enemies/demon_lord_nightborne.gd" id="1_nb_script"]
 [ext_resource type="Texture2D" path="res://art/characters/enemies/NightBorne/NightBorne.png" id="2_nb_tex"]

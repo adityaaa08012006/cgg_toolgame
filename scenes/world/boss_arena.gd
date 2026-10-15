@@ -281,9 +281,7 @@ func _open_abyssal_rift() -> void:
 	portal.body_entered.connect(func(body):
 		if body.is_in_group("player"):
 			SceneTransition.change_scene(
-				"res://scenes/world/throne_room.tscn",
-				"The Nether Citadel",
-				"Throne of NightBorne"
+				"res://scenes/ui/citadel_cutscene.tscn"
 			)
 	)
 	

@@ -14,6 +14,7 @@ var player_coins: int = 0
 
 var has_armor: bool = false
 var has_sword: bool = false
+var is_epilogue: bool = false
 
 signal doom_tick(time_remaining: float)
 signal doom_expired

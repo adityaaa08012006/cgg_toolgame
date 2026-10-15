@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://c1p8v7m4k9q2w"]
+[gd_scene format=3 uid="uid://c1p8v7m4laq2w"]
 
 [ext_resource type="Script" path="res://scenes/world/throne_room.gd" id="1_throne_script"]
 [ext_resource type="Script" path="res://scripts/throne_room_generator.gd" id="2_throne_gen"]
