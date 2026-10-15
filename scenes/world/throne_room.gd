@@ -10,7 +10,7 @@ var boss_hp_bar: TextureProgressBar
 var boss_hp_label: Label
 
 func _ready() -> void:
-	AudioManager.play_music("res://audio/music/Infinite Descent.ogg", -3.0)
+	AudioManager.play_music("res://audio/music/Infinite Descent.ogg", 0.5)
 	SceneTransition.show_area_banner("The Nether Citadel", "Throne of NightBorne")
 	_build_boss_hud()
 	
@@ -113,7 +113,10 @@ func _trigger_intro_dialogue() -> void:
 		{"speaker": "NightBorne", "text": "Look upon the Nether Core above my throne. Your beloved brother's soul fuels the final incantation of the Doomsday Requiem!"},
 		{"speaker": "Kaelen's Echo", "text": "Arthur! Arthur, don't look at the core! He blinks behind you the moment you swing! Leap over his third void wave—DON'T LET HIM CAST!"},
 		{"speaker": "NightBorne", "text": "Silence, vessel! Let us see if your starlight blade can pierce eternal midnight!"}
-	])
+	], func():
+		if boss and is_instance_valid(boss) and boss.has_method("begin_combat"):
+			boss.begin_combat()
+	)
 
 func _on_boss_hp_changed(curr: int, maximum: int) -> void:
 	if boss_hp_bar:

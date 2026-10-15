@@ -13,7 +13,6 @@ enum State {
 	INTRO,
 	IDLE,
 	CHASE,
-	REPOSITION,
 	TELEPORT_STRIKE,
 	TRIPLE_COMBO,
 	HELLFIRE_GEYSERS,
@@ -31,9 +30,8 @@ var frame_idx: int = 0
 var is_invulnerable: bool = false
 
 # Movement & Spacing
-var speed: float = 95.0
+var speed: float = 125.0
 var target: Node2D = null
-var reposition_dir: Vector2 = Vector2.ZERO
 
 # Animation rows on 23x5 spritesheet
 const ROW_IDLE := 0
@@ -50,6 +48,7 @@ var row_frame_count: int = 9
 @onready var hit_box: Area2D = $HitBox
 
 var kaelen_spirit: Sprite2D = null
+var ember_particles: CPUParticles2D = null
 
 func _ready() -> void:
 	hp = max_hp
@@ -57,14 +56,35 @@ func _ready() -> void:
 	add_to_group("boss")
 	add_to_group("demon_lord")
 	
-	sprite.texture = load("res://art/characters/enemies/NightBorne/NightBorne.png")
+	sprite.texture = load("res://art/characters/enemies/NightBorne/NightBorne_crimson.png")
 	sprite.hframes = 23
 	sprite.vframes = 5
 	sprite.frame = 0
 	
+	_setup_ember_aura()
+	
 	current_state = State.INTRO
-	state_timer = 2.0
+	velocity = Vector2.ZERO
 	_set_anim(ROW_IDLE, 9, 0.12)
+
+func _setup_ember_aura() -> void:
+	ember_particles = CPUParticles2D.new()
+	ember_particles.amount = 20
+	ember_particles.lifetime = 1.0
+	ember_particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	ember_particles.emission_rect_extents = Vector2(16, 26)
+	ember_particles.position = Vector2(0, -20)
+	ember_particles.gravity = Vector2(0, -35)
+	ember_particles.scale_amount_min = 2.0
+	ember_particles.scale_amount_max = 3.5
+	ember_particles.color = Color(3.0, 0.25, 0.15, 0.8)
+	add_child(ember_particles)
+
+func begin_combat() -> void:
+	if current_state == State.INTRO:
+		_spawn_afterimage()
+		AudioManager.play_sfx("res://audio/sfx/explosionCrunch_000.ogg", 2.0)
+		_enter_state(State.IDLE)
 
 func _find_target() -> void:
 	if not target or not is_instance_valid(target):
@@ -84,11 +104,11 @@ func _physics_process(delta: float) -> void:
 	match current_state:
 		State.INTRO:
 			velocity = Vector2.ZERO
-			if state_timer <= 0:
-				_enter_state(State.IDLE)
+			if target:
+				_face_target()
 				
 		State.IDLE:
-			velocity = velocity.move_toward(Vector2.ZERO, 350.0 * delta)
+			velocity = velocity.move_toward(Vector2.ZERO, 400.0 * delta)
 			if target:
 				_face_target()
 			if state_timer <= 0:
@@ -99,23 +119,14 @@ func _physics_process(delta: float) -> void:
 				_face_target()
 				var to_t = (target.global_position - global_position)
 				var dist = to_t.length()
-				if dist > 85.0:
-					velocity = to_t.normalized() * (speed * (1.15 if phase >= 2 else 1.0))
-					_set_anim(ROW_RUN, 6, 0.09)
+				if dist > 70.0:
+					velocity = to_t.normalized() * (speed * (1.2 if phase >= 2 else 1.0))
+					_set_anim(ROW_RUN, 6, 0.08)
 				else:
 					velocity = Vector2.ZERO
 					_enter_state(State.TRIPLE_COMBO)
 			if state_timer <= 0:
-				_enter_state(State.REPOSITION)
-				
-		State.REPOSITION:
-			# Glides backward or circles Arthur to maintain tactical distance
-			if target:
-				_face_target()
-				velocity = reposition_dir * (speed * 0.85)
-				_set_anim(ROW_RUN, 6, 0.10)
-			if state_timer <= 0:
-				_enter_state(State.IDLE)
+				_choose_next_attack()
 				
 		State.TELEPORT_STRIKE, State.TRIPLE_COMBO, State.HELLFIRE_GEYSERS, State.VOID_NEEDLE_SPIRAL:
 			velocity = velocity.move_toward(Vector2.ZERO, 400.0 * delta)
@@ -123,7 +134,7 @@ func _physics_process(delta: float) -> void:
 		State.STAGGERED:
 			velocity = velocity.move_toward(Vector2.ZERO, 300.0 * delta)
 			if state_timer <= 0:
-				_enter_state(State.REPOSITION)
+				_enter_state(State.IDLE)
 				
 		State.FINAL_STAND:
 			velocity = Vector2.ZERO
@@ -178,14 +189,11 @@ func _enter_state(new_state: State) -> void:
 	match new_state:
 		State.IDLE:
 			_set_anim(ROW_IDLE, 9, 0.12)
-			state_timer = randf_range(1.0, 1.6) if phase >= 2 else randf_range(1.4, 2.0)
+			state_timer = randf_range(0.45, 0.75) if phase >= 2 else randf_range(0.6, 0.95)
 			
 		State.CHASE:
-			_set_anim(ROW_RUN, 6, 0.09)
+			_set_anim(ROW_RUN, 6, 0.08)
 			state_timer = 2.0
-			
-		State.REPOSITION:
-			_start_reposition()
 			
 		State.TELEPORT_STRIKE:
 			_execute_teleport_strike()
@@ -201,18 +209,7 @@ func _enter_state(new_state: State) -> void:
 			
 		State.STAGGERED:
 			_set_anim(ROW_HURT, 5, 0.12)
-			state_timer = 1.2
-
-func _start_reposition() -> void:
-	_set_anim(ROW_RUN, 6, 0.10)
-	state_timer = randf_range(1.2, 1.8)
-	if target:
-		# Either back away directly or strafe sideways
-		var away = (global_position - target.global_position).normalized()
-		var perp = Vector2(-away.y, away.x) * (1.0 if randf() < 0.5 else -1.0)
-		reposition_dir = (away * 0.7 + perp * 0.6).normalized()
-	else:
-		reposition_dir = Vector2.ZERO
+			state_timer = 0.8
 
 func _choose_next_attack() -> void:
 	if not target:
@@ -224,30 +221,37 @@ func _choose_next_attack() -> void:
 	
 	if phase == 1:
 		if dist > 220.0:
-			if r < 0.45:
+			if r < 0.6:
 				_enter_state(State.TELEPORT_STRIKE)
 			else:
 				_enter_state(State.CHASE)
-		elif dist > 110.0:
+		elif dist > 85.0:
 			if r < 0.4:
 				_enter_state(State.HELLFIRE_GEYSERS)
-			elif r < 0.7:
-				_enter_state(State.CHASE)
-			else:
-				_enter_state(State.REPOSITION)
-		else:
-			_enter_state(State.TRIPLE_COMBO)
-	else:
-		# Phase 2 (faster variety, clear windows)
-		if dist > 180.0:
-			if r < 0.4:
-				_enter_state(State.VOID_NEEDLE_SPIRAL)
 			elif r < 0.75:
 				_enter_state(State.TELEPORT_STRIKE)
 			else:
 				_enter_state(State.CHASE)
 		else:
-			if r < 0.5:
+			_enter_state(State.TRIPLE_COMBO)
+	else:
+		# Phase 2 (aggressive variety)
+		if dist > 180.0:
+			if r < 0.45:
+				_enter_state(State.VOID_NEEDLE_SPIRAL)
+			elif r < 0.8:
+				_enter_state(State.TELEPORT_STRIKE)
+			else:
+				_enter_state(State.CHASE)
+		elif dist > 85.0:
+			if r < 0.4:
+				_enter_state(State.HELLFIRE_GEYSERS)
+			elif r < 0.75:
+				_enter_state(State.VOID_NEEDLE_SPIRAL)
+			else:
+				_enter_state(State.TELEPORT_STRIKE)
+		else:
+			if r < 0.65:
 				_enter_state(State.TRIPLE_COMBO)
 			else:
 				_enter_state(State.HELLFIRE_GEYSERS)
@@ -261,88 +265,87 @@ func _execute_teleport_strike() -> void:
 	_spawn_afterimage()
 	AudioManager.play_sfx("res://audio/sfx/woosh2.ogg", 1.0)
 	
-	# Telegraph: Glow before vanishing
+	# Telegraph: Crimson glow before vanishing
 	var pre_tw = create_tween()
-	pre_tw.tween_property(sprite, "modulate", Color(2.5, 0.4, 3.0, 1.0), 0.25)
+	pre_tw.tween_property(sprite, "modulate", Color(3.5, 0.3, 0.2, 1.0), 0.22)
 	await pre_tw.finished
 	
 	var tw = create_tween()
-	tw.tween_property(sprite, "modulate:a", 0.0, 0.15)
+	tw.tween_property(sprite, "modulate:a", 0.0, 0.12)
 	await tw.finished
 	
 	if not is_instance_valid(target) or current_state == State.DEAD:
 		return
 		
-	# Reappear at healthy 80px distance with clear recovery
+	# Reappear right near Arthur for high-stakes strike
 	var dir_to_face = -1.0 if target.global_position.x > global_position.x else 1.0
-	var offset = Vector2(dir_to_face * 80.0, randf_range(-20, 20))
+	var offset = Vector2(dir_to_face * 65.0, randf_range(-15, 15))
 	global_position = target.global_position + offset
 	_face_target()
 	
 	_spawn_afterimage()
 	AudioManager.play_sfx("res://audio/sfx/woosh3.ogg", 1.0)
 	var tw_in = create_tween()
-	tw_in.tween_property(sprite, "modulate", Color.WHITE, 0.15)
+	tw_in.tween_property(sprite, "modulate", Color.WHITE, 0.12)
 	await tw_in.finished
 	
-	# Clear 0.55s wind-up telegraph so player can react and dodge
+	# Clear 0.45s wind-up telegraph so player can react and dodge/parry
 	_set_anim(ROW_IDLE, 9, 0.08)
-	sprite.modulate = Color(2.5, 0.3, 0.8, 1.0)
-	await get_tree().create_timer(0.55).timeout
+	sprite.modulate = Color(3.5, 0.3, 0.2, 1.0)
+	await get_tree().create_timer(0.45).timeout
 	sprite.modulate = Color.WHITE
 	
 	_set_anim(ROW_ATTACK, 12, 0.06)
 	AudioManager.play_sfx("res://audio/sfx/knifeSlice.ogg", 1.0)
-	await get_tree().create_timer(0.3).timeout
+	await get_tree().create_timer(0.25).timeout
 	_check_melee_hit(22, 90.0)
 	await get_tree().create_timer(0.4).timeout
 	
-	_enter_state(State.REPOSITION)
+	_enter_state(State.IDLE)
 
 # ── ATTACK 2: Triple Void Crescent Combo ──
 func _execute_triple_combo() -> void:
 	_face_target()
 	
 	# Hit 1 Telegraph & Slash
-	sprite.modulate = Color(2.0, 0.5, 2.5, 1.0)
-	await get_tree().create_timer(0.45).timeout
+	sprite.modulate = Color(3.0, 0.3, 0.2, 1.0)
+	await get_tree().create_timer(0.38).timeout
 	sprite.modulate = Color.WHITE
 	
 	_set_anim(ROW_ATTACK, 12, 0.06)
 	AudioManager.play_sfx("res://audio/sfx/knifeSlice.ogg", 1.0)
-	await get_tree().create_timer(0.28).timeout
-	_check_melee_hit(14, 75.0)
+	await get_tree().create_timer(0.25).timeout
+	_check_melee_hit(14, 80.0)
 	
-	# Generous pause between swings
-	await get_tree().create_timer(0.4).timeout
+	# Brief cadence pause between swings
+	await get_tree().create_timer(0.32).timeout
 	_face_target()
 	
 	# Hit 2: Cross Slash
 	frame_idx = 0
 	_set_anim(ROW_ATTACK, 12, 0.06)
 	AudioManager.play_sfx("res://audio/sfx/knifeSlice.ogg", 1.0)
-	await get_tree().create_timer(0.28).timeout
-	_check_melee_hit(14, 75.0)
+	await get_tree().create_timer(0.25).timeout
+	_check_melee_hit(14, 80.0)
 	
-	# Hit 3: Heavy Void Wave with large 0.75s charge
-	await get_tree().create_timer(0.45).timeout
+	# Hit 3: Heavy Crimson Cleave Wave with clear 0.6s charge
+	await get_tree().create_timer(0.35).timeout
 	_face_target()
 	
-	# Heavy starlight charge visual
 	var charge_tw = create_tween()
-	charge_tw.tween_property(sprite, "modulate", Color(3.0, 0.8, 0.2, 1.0), 0.75)
+	charge_tw.tween_property(sprite, "modulate", Color(3.5, 0.5, 0.15, 1.0), 0.6)
 	await charge_tw.finished
 	sprite.modulate = Color.WHITE
 	
 	frame_idx = 0
 	_set_anim(ROW_ATTACK, 12, 0.05)
 	AudioManager.play_sfx("res://audio/sfx/explosionCrunch_000.ogg", 2.0)
-	await get_tree().create_timer(0.25).timeout
+	await get_tree().create_timer(0.22).timeout
 	_spawn_void_cleave_wave()
 	
-	# Generous recovery window: 1.2s opening
+	# Punish window after combo
 	await get_tree().create_timer(0.6).timeout
-	_enter_state(State.REPOSITION)
+	_enter_state(State.IDLE)
 
 # ── ATTACK 3: Hellfire Geysers ──
 func _execute_hellfire_geysers() -> void:
@@ -353,12 +356,12 @@ func _execute_hellfire_geysers() -> void:
 	for i in range(count):
 		if not is_instance_valid(target) or current_state == State.DEAD:
 			break
-		var pos = target.global_position + Vector2(randf_range(-25, 25), randf_range(-25, 25))
+		var pos = target.global_position + Vector2(randf_range(-30, 30), randf_range(-30, 30))
 		_spawn_geyser_rune(pos)
-		await get_tree().create_timer(0.55).timeout
+		await get_tree().create_timer(0.45).timeout
 		
-	await get_tree().create_timer(0.8).timeout
-	_enter_state(State.REPOSITION)
+	await get_tree().create_timer(0.65).timeout
+	_enter_state(State.IDLE)
 
 func _spawn_geyser_rune(pos: Vector2) -> void:
 	var circle = Node2D.new()
@@ -367,7 +370,7 @@ func _spawn_geyser_rune(pos: Vector2) -> void:
 	
 	var warn = Line2D.new()
 	warn.width = 3.5
-	warn.default_color = Color(1.0, 0.2, 0.5, 0.85)
+	warn.default_color = Color(3.0, 0.3, 0.1, 0.9)
 	var pts: Array[Vector2] = []
 	for a in range(17):
 		var angle = a * (TAU / 16.0)
@@ -375,16 +378,16 @@ func _spawn_geyser_rune(pos: Vector2) -> void:
 	warn.points = pts
 	circle.add_child(warn)
 	
-	# 0.9s delay gives player plenty of time to step out
+	# 0.75s delay gives player clear telegraph to step out
 	var tw = circle.create_tween()
-	tw.tween_property(circle, "scale", Vector2(1.25, 1.25), 0.9)
+	tw.tween_property(circle, "scale", Vector2(1.25, 1.25), 0.75)
 	await tw.finished
 	
 	if is_instance_valid(circle):
 		AudioManager.play_sfx("res://audio/sfx/explosionCrunch_000.ogg", 1.0)
 		var burst = Sprite2D.new()
 		burst.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_beige.png")
-		burst.modulate = Color(2.2, 0.2, 0.8, 0.9)
+		burst.modulate = Color(3.5, 0.35, 0.1, 0.95)
 		burst.scale = Vector2(1.8, 1.8)
 		circle.add_child(burst)
 		
@@ -403,7 +406,7 @@ func _execute_void_needle_spiral() -> void:
 	
 	# Clear windup charge
 	var ctw = create_tween()
-	ctw.tween_property(sprite, "modulate", Color(2.5, 0.4, 3.5, 1.0), 0.6)
+	ctw.tween_property(sprite, "modulate", Color(3.5, 0.3, 0.15, 1.0), 0.5)
 	await ctw.finished
 	sprite.modulate = Color.WHITE
 	
@@ -413,7 +416,7 @@ func _execute_void_needle_spiral() -> void:
 		var angle = base_angle + p * (TAU / projectiles_count)
 		_spawn_void_needle(Vector2(cos(angle), sin(angle)))
 		
-	await get_tree().create_timer(0.6).timeout
+	await get_tree().create_timer(0.5).timeout
 	
 	# Second ring offset with wide gaps
 	base_angle += (TAU / (projectiles_count * 2))
@@ -421,8 +424,8 @@ func _execute_void_needle_spiral() -> void:
 		var angle = base_angle + p * (TAU / projectiles_count)
 		_spawn_void_needle(Vector2(cos(angle), sin(angle)))
 		
-	await get_tree().create_timer(1.2).timeout
-	_enter_state(State.REPOSITION)
+	await get_tree().create_timer(0.8).timeout
+	_enter_state(State.IDLE)
 
 func _spawn_void_needle(dir: Vector2) -> void:
 	var needle = Area2D.new()
@@ -432,7 +435,7 @@ func _spawn_void_needle(dir: Vector2) -> void:
 	
 	var spr = Sprite2D.new()
 	spr.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_brown.png")
-	spr.modulate = Color(2.2, 0.5, 3.0, 1.0)
+	spr.modulate = Color(3.5, 0.35, 0.1, 1.0)
 	spr.scale = Vector2(0.4, 0.4)
 	needle.add_child(spr)
 	
@@ -444,8 +447,8 @@ func _spawn_void_needle(dir: Vector2) -> void:
 	
 	get_parent().add_child(needle)
 	
-	# 140px/s speed makes it comfortable to weave through
-	var speed_v = dir * 140.0
+	# 150px/s speed makes it comfortable to weave through
+	var speed_v = dir * 150.0
 	var life = 3.0
 	
 	needle.body_entered.connect(func(body):
@@ -467,7 +470,7 @@ func _spawn_void_cleave_wave() -> void:
 	var dir = -1.0 if sprite.flip_h else 1.0
 	var spr = Sprite2D.new()
 	spr.texture = load("res://art/ui/rpg_expansion/PNG/buttonLong_brown.png")
-	spr.modulate = Color(3.5, 0.4, 0.9, 0.9)
+	spr.modulate = Color(3.5, 0.4, 0.1, 0.95)
 	spr.scale = Vector2(0.3, 0.8)
 	spr.rotation = PI / 2.0
 	wave.add_child(spr)
@@ -510,7 +513,7 @@ func _spawn_afterimage() -> void:
 	img.flip_h = sprite.flip_h
 	img.global_position = sprite.global_position
 	img.scale = scale
-	img.modulate = Color(0.8, 0.1, 1.2, 0.6)
+	img.modulate = Color(1.8, 0.2, 0.1, 0.6)
 	get_parent().add_child(img)
 	
 	var tw = img.create_tween()
@@ -537,7 +540,7 @@ func take_damage(amount: int) -> void:
 		phase = 2
 		phase_changed.emit(2)
 		AudioManager.play_sfx("res://audio/sfx/explosionCrunch_000.ogg", 2.0)
-		_enter_state(State.REPOSITION)
+		_enter_state(State.IDLE)
 		
 	if hp <= max_hp * 0.1 and phase == 2:
 		phase = 3

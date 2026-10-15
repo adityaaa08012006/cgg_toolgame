@@ -10,20 +10,13 @@ const PATH_TOWER   := "res://art/tiny_swords/Buildings/Red Buildings/Tower.png"
 const PATH_ROCK    := "res://art/tiny_swords/Terrain/Decorations/Rocks/Rock1.png"
 
 var ground_layer: TileMapLayer
-var magic_circle_nodes: Array[Node2D] = []
 
 func _ready() -> void:
 	y_sort_enabled = true
 	_generate_throne_room()
 
-func _process(delta: float) -> void:
-	for circle in magic_circle_nodes:
-		if is_instance_valid(circle):
-			circle.rotation += 0.25 * delta
-
 func _generate_throne_room() -> void:
 	_setup_floor()
-	_setup_occult_circle()
 	_setup_props()
 	_setup_floating_monoliths()
 
@@ -80,53 +73,6 @@ func _setup_floor() -> void:
 	for y in range(3, MAP_HEIGHT - 1):
 		border_layer.set_cell(Vector2i(8, y), 0, Vector2i(0, 1))
 		border_layer.set_cell(Vector2i(11, y), 0, Vector2i(2, 1))
-
-func _setup_occult_circle() -> void:
-	# Giant glowing ritual circle in front of the throne
-	var ritual_node := Node2D.new()
-	ritual_node.position = Vector2(640, 380)
-	ritual_node.z_index = -6
-	add_child(ritual_node)
-	magic_circle_nodes.append(ritual_node)
-
-	# Outer glowing ring
-	var outer_ring := Line2D.new()
-	outer_ring.width = 4.0
-	outer_ring.default_color = Color(2.5, 0.4, 2.8, 0.8)
-	var pts: Array[Vector2] = []
-	for i in range(33):
-		var a = i * (TAU / 32.0)
-		pts.append(Vector2(cos(a), sin(a)) * 160.0)
-	outer_ring.points = pts
-	ritual_node.add_child(outer_ring)
-
-	# Inner glowing ring
-	var inner_ring := Line2D.new()
-	inner_ring.width = 2.5
-	inner_ring.default_color = Color(3.0, 0.8, 1.2, 0.7)
-	var in_pts: Array[Vector2] = []
-	for i in range(17):
-		var a = i * (TAU / 16.0)
-		in_pts.append(Vector2(cos(a), sin(a)) * 110.0)
-	inner_ring.points = in_pts
-	ritual_node.add_child(inner_ring)
-
-	# Occult star inside
-	var star := Line2D.new()
-	star.width = 2.0
-	star.default_color = Color(2.0, 0.3, 2.5, 0.6)
-	var s_pts: Array[Vector2] = []
-	var num_pts = 6
-	for i in range(num_pts + 1):
-		var a = i * (TAU * 2.0 / num_pts)
-		s_pts.append(Vector2(cos(a), sin(a)) * 105.0)
-	star.points = s_pts
-	ritual_node.add_child(star)
-
-	# Pulse animation for the whole ritual circle
-	var ptw = ritual_node.create_tween().set_loops()
-	ptw.tween_property(ritual_node, "modulate", Color(1.2, 0.8, 1.4, 1.0), 1.2)
-	ptw.tween_property(ritual_node, "modulate", Color(0.7, 0.4, 0.9, 0.8), 1.2)
 
 func _setup_props() -> void:
 	# Nether Spires flanking north
