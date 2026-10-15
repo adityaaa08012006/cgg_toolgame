@@ -33,11 +33,11 @@ script = ExtResource("1_throne_script")
 environment = SubResource("Environment_glow")
 
 [node name="AbyssalModulate" type="CanvasModulate" parent="."]
-color = Color(0.65, 0.45, 0.8, 1)
+color = Color(0.48, 0.36, 0.58, 1)
 
 [node name="AbyssalLight" type="DirectionalLight2D" parent="."]
-color = Color(0.8, 0.4, 1, 1)
-energy = 0.7
+color = Color(0.65, 0.35, 0.85, 1)
+energy = 0.38
 blend_mode = 0
 
 [node name="ThroneRoomGenerator" type="Node2D" parent="."]

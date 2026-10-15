@@ -49,6 +49,7 @@ const TEX_JUMP_FALL = preload("res://art/characters/knight/FREE_Knight 2D Pixel 
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
 func _ready() -> void:
+	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	add_to_group("player")
 	if attack_hitbox:
 		attack_hitbox.monitoring = false
@@ -432,10 +433,10 @@ func _execute_leap_impact() -> void:
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	for enemy in enemies:
 		if enemy != boss and enemy.has_method("take_damage") and global_position.distance_to(enemy.global_position) <= slam_radius:
-			enemy.take_damage(slam_dmg, global_position)
+			enemy.take_damage(slam_dmg)
 
 func take_damage(amount: int, attacker_pos: Vector2 = Vector2.ZERO) -> void:
-	if is_rolling or is_leaping:
+	if is_rolling or is_leaping:	
 		return # 100% Invulnerability during dodge roll & airborne leap
 
 	if is_blocking:

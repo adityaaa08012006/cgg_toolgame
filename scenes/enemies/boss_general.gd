@@ -333,7 +333,7 @@ func _hit_cleave_target(amount: int, reach: float) -> void:
 		if off.length() <= reach and face_dir.dot(off.normalized()) > 0.0:
 			player.take_damage(amount, global_position)
 
-func take_damage(amount: int) -> void:
+func take_damage(amount: int, _attacker_pos: Vector2 = Vector2.ZERO) -> void:
 	if current_state == State.DEAD:
 		return
 	if _is_in_dialogue():

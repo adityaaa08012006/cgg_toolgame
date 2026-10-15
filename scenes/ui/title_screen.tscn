@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://scenes/ui/title_screen.gd" id="1_title_script"]
 [ext_resource type="Texture2D" path="res://startscreen.jpg" id="2_bg_tex"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI-Bold.ttf" id="3_font_bold"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI.ttf" id="4_font_regular"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="3_font_bold"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future Narrow.ttf" id="4_font_regular"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/panel_brown.png" id="5_panel_brown"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/buttonLong_brown.png" id="6_btn_brown"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/buttonLong_brown_pressed.png" id="7_btn_brown_press"]

@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/intro_cutscenes.gd" id="1_script"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI-Bold.ttf" id="2_font_bold"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI.ttf" id="3_font"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="2_font_bold"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future Narrow.ttf" id="3_font"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/buttonLong_brown.png" id="4_banner"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_subtitle"]

@@ -29,7 +29,7 @@ func _emit_quest_update(text: String) -> void:
 		qm.quest_updated.emit(text)
 
 func _ready() -> void:
-	_play_music("res://audio/music/Sad Descent.ogg", -5.0)
+	_play_music("res://audio/music/brave_reaction.ogg", -4.0)
 	_emit_quest_update("Seek the lone warrior along the Ashen Ridge")
 
 	if gateway_trigger:

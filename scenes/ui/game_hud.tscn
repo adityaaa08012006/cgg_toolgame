@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/ui/game_hud.gd" id="1_hud_script"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/panel_brown.png" id="2_panel"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/buttonLong_brown.png" id="3_banner"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI-Bold.ttf" id="4_font"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="4_font"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/barBack_horizontalMid.png" id="5_bar_bg"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/barRed_horizontalMid.png" id="6_bar_fill"]
 

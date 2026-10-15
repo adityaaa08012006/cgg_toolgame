@@ -118,16 +118,20 @@ func do_attack(target: Node2D) -> void:
 		sprite.frame = 0
 		is_attacking = false
 
-func take_damage(amount: int) -> void:
+func take_damage(amount: int, attacker_pos: Vector2 = Vector2.ZERO) -> void:
 	hp -= amount
 	var tween := create_tween()
 	tween.tween_property(sprite, "modulate", Color(3.0, 0.2, 0.2), 0.1)
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.1)
 
 	# Knockback
-	var player: Node2D = get_tree().get_first_node_in_group("player") as Node2D
-	if player:
-		var kb_dir: Vector2 = (global_position - player.global_position).normalized()
+	var kb_origin := attacker_pos
+	if kb_origin == Vector2.ZERO:
+		var player: Node2D = get_tree().get_first_node_in_group("player") as Node2D
+		if player:
+			kb_origin = player.global_position
+	if kb_origin != Vector2.ZERO:
+		var kb_dir: Vector2 = (global_position - kb_origin).normalized()
 		velocity = kb_dir * 180.0
 		move_and_slide()
 

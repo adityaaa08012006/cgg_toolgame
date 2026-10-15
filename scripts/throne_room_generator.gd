@@ -5,26 +5,68 @@ const MAP_WIDTH: int = 20
 const MAP_HEIGHT: int = 15
 const TILE_SZ: int = 64
 
-const PATH_TERRAIN := "res://art/tiny_swords/Terrain/Tileset/Tilemap_color3.png"
-const PATH_TOWER   := "res://art/tiny_swords/Buildings/Red Buildings/Tower.png"
-const PATH_ROCK    := "res://art/tiny_swords/Terrain/Decorations/Rocks/Rock1.png"
+const PATH_TERRAIN       := "res://art/tiny_swords/Terrain/Tileset/Tilemap_color5.png"
+const PATH_CASTLE        := "res://art/tiny_swords/Buildings/Black Buildings/Castle.png"
+const PATH_TOWER         := "res://art/tiny_swords/Buildings/Black Buildings/Tower.png"
+const PATH_BARRACKS      := "res://art/tiny_swords/Buildings/Black Buildings/Barracks.png"
+const PATH_ROCK1         := "res://art/tiny_swords/Terrain/Decorations/Rocks/Rock1.png"
+const PATH_ROCK4         := "res://art/tiny_swords/Terrain/Decorations/Rocks/Rock4.png"
+const PATH_FIRE_ANIM     := "res://art/tiny_swords/Particle FX/Fire_02.png"
 
 var ground_layer: TileMapLayer
+var carpet_layer: TileMapLayer
+var border_layer: TileMapLayer
+var fire_frames: SpriteFrames
+var light_texture: Texture2D
 
 func _ready() -> void:
 	y_sort_enabled = true
+	_prepare_fire_frames()
+	_prepare_light_texture()
 	_generate_throne_room()
+
+func _prepare_fire_frames() -> void:
+	fire_frames = SpriteFrames.new()
+	fire_frames.add_animation("burn")
+	fire_frames.set_animation_speed("burn", 12.0)
+	fire_frames.set_animation_loop("burn", true)
+	
+	var fire_tex: Texture2D = load(PATH_FIRE_ANIM)
+	if fire_tex:
+		for f in range(10):
+			var atlas := AtlasTexture.new()
+			atlas.atlas = fire_tex
+			atlas.region = Rect2(f * 64, 0, 64, 64)
+			fire_frames.add_frame("burn", atlas)
+
+func _prepare_light_texture() -> void:
+	var grad := Gradient.new()
+	grad.colors = PackedColorArray([Color.WHITE, Color(1, 1, 1, 0.0)])
+	grad.offsets = PackedFloat32Array([0.0, 1.0])
+	
+	var gtex := GradientTexture2D.new()
+	gtex.gradient = grad
+	gtex.fill = GradientTexture2D.FILL_RADIAL
+	gtex.fill_from = Vector2(0.5, 0.5)
+	gtex.fill_to = Vector2(0.5, 0.0)
+	gtex.width = 128
+	gtex.height = 128
+	light_texture = gtex
 
 func _generate_throne_room() -> void:
 	_setup_floor()
-	_setup_props()
-	_setup_floating_monoliths()
+	_setup_architecture()
+	_setup_braziers()
+	_setup_ambient_embers()
 
 func _setup_floor() -> void:
 	var ts := TileSet.new()
 	ts.tile_size = Vector2i(TILE_SZ, TILE_SZ)
 
 	var color_tex: Texture2D = load(PATH_TERRAIN)
+	if not color_tex:
+		color_tex = load("res://art/tiny_swords/Terrain/Tileset/Tilemap_color3.png")
+		
 	var src := TileSetAtlasSource.new()
 	src.texture = color_tex
 	src.texture_region_size = Vector2i(TILE_SZ, TILE_SZ)
@@ -33,12 +75,12 @@ func _setup_floor() -> void:
 			src.create_tile(Vector2i(c, r))
 	ts.add_source(src, 0)
 
-	# Obsidian Stone Foundation
+	# 1. Dark Ashen Obsidian Floor
 	ground_layer = TileMapLayer.new()
 	ground_layer.name = "ThroneFloorLayer"
 	ground_layer.tile_set = ts
-	ground_layer.z_index = -10
-	ground_layer.modulate = Color(0.28, 0.18, 0.38, 1.0) # Deep dark obsidian
+	ground_layer.z_index = -12
+	ground_layer.modulate = Color(0.22, 0.15, 0.32, 1.0)
 	add_child(ground_layer)
 
 	for x in range(MAP_WIDTH):
@@ -46,149 +88,144 @@ func _setup_floor() -> void:
 			var tile_coords := Vector2i(1, 1)
 			if (x + y * 2) % 4 == 0:
 				tile_coords = Vector2i(2, 1)
-			elif (x * 3 + y) % 6 == 0:
+			elif (x * 3 + y) % 5 == 0:
 				tile_coords = Vector2i(1, 2)
 			ground_layer.set_cell(Vector2i(x, y), 0, tile_coords)
 
-	# Ornate Royal Crimson Aisle Carpet
-	var carpet_layer := TileMapLayer.new()
+	# 2. Ornate Royal Crimson Aisle Carpet
+	carpet_layer = TileMapLayer.new()
 	carpet_layer.name = "CarpetLayer"
 	carpet_layer.tile_set = ts
-	carpet_layer.z_index = -8
-	carpet_layer.modulate = Color(1.8, 0.15, 0.3, 0.9) # Glowing royal blood velvet
+	carpet_layer.z_index = -9
+	carpet_layer.modulate = Color(1.9, 0.12, 0.28, 0.92)
 	add_child(carpet_layer)
 
-	for y in range(3, MAP_HEIGHT - 1):
+	for y in range(4, MAP_HEIGHT - 1):
 		carpet_layer.set_cell(Vector2i(9, y), 0, Vector2i(1, 1))
 		carpet_layer.set_cell(Vector2i(10, y), 0, Vector2i(1, 1))
 		
-	# Gold/Rune Carpet Border
-	var border_layer := TileMapLayer.new()
+	# 3. Gold Runic Border
+	border_layer = TileMapLayer.new()
 	border_layer.name = "BorderLayer"
 	border_layer.tile_set = ts
-	border_layer.z_index = -7
-	border_layer.modulate = Color(2.0, 1.6, 0.4, 0.75) # Golden runes border
+	border_layer.z_index = -8
+	border_layer.modulate = Color(2.2, 1.7, 0.45, 0.8)
 	add_child(border_layer)
 	
-	for y in range(3, MAP_HEIGHT - 1):
+	for y in range(4, MAP_HEIGHT - 1):
 		border_layer.set_cell(Vector2i(8, y), 0, Vector2i(0, 1))
 		border_layer.set_cell(Vector2i(11, y), 0, Vector2i(2, 1))
 
-func _setup_props() -> void:
-	# Nether Spires flanking north
-	_spawn_prop(PATH_TOWER, Vector2(180, 140), Vector2(1.4, 1.4), true, Color(0.5, 0.25, 0.75))
-	_spawn_prop(PATH_TOWER, Vector2(1100, 140), Vector2(1.4, 1.4), true, Color(0.5, 0.25, 0.75))
-	
-	# Massive Obsidian Nether Throne
-	var throne := Sprite2D.new()
-	throne.texture = load(PATH_TOWER)
-	throne.modulate = Color(0.25, 0.12, 0.4, 1.0)
-	throne.scale = Vector2(1.8, 1.8)
-	throne.position = Vector2(640, 150)
-	add_child(throne)
-	
-	# Colossal Pulsing Abyssal Void Singularity above the throne
-	var vortex := Node2D.new()
-	vortex.position = Vector2(640, 80)
-	vortex.z_index = -3
-	add_child(vortex)
-	magic_circle_nodes.append(vortex)
+func _setup_architecture() -> void:
+	# ── Grand Nether Citadel Facade (North Wall) ──
+	var citadel := Sprite2D.new()
+	citadel.texture = load(PATH_CASTLE)
+	citadel.scale = Vector2(2.1, 2.1)
+	citadel.position = Vector2(640, 125)
+	citadel.modulate = Color(0.35, 0.22, 0.48, 1.0)
+	citadel.z_index = -5
+	add_child(citadel)
 
-	# Singularity Outer Halo
-	var halo := Sprite2D.new()
-	halo.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_brown.png")
-	halo.modulate = Color(3.5, 0.2, 4.0, 0.9)
-	halo.scale = Vector2(2.4, 2.4)
-	vortex.add_child(halo)
+	# North Wall Spires flanking the Citadel
+	_spawn_spire(Vector2(260, 130), Vector2(1.8, 1.8))
+	_spawn_spire(Vector2(1020, 130), Vector2(1.8, 1.8))
 
-	# Singularity Dark Core
-	var core := Sprite2D.new()
-	core.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_beige.png")
-	core.modulate = Color(0.1, 0.05, 0.2, 1.0)
-	core.scale = Vector2(1.2, 1.2)
-	vortex.add_child(core)
+	# Raised Stone Dais for the Demon Lord's Throne
+	var dais := Sprite2D.new()
+	dais.texture = load(PATH_BARRACKS)
+	dais.scale = Vector2(1.15, 0.85)
+	dais.position = Vector2(640, 205)
+	dais.modulate = Color(0.28, 0.16, 0.38, 1.0)
+	dais.z_index = -3
+	add_child(dais)
 
-	var vtw = vortex.create_tween().set_loops()
-	vtw.tween_property(halo, "scale", Vector2(2.8, 2.8), 1.0).set_trans(Tween.TRANS_SINE)
-	vtw.tween_property(halo, "scale", Vector2(2.2, 2.2), 1.0).set_trans(Tween.TRANS_SINE)
-
-	# Grand Braziers with dynamic flame glow
-	for py in [320, 520, 720]:
-		_spawn_brazier(Vector2(360, py))
-		_spawn_brazier(Vector2(920, py))
-
-func _setup_floating_monoliths() -> void:
-	# Floating obsidian monoliths hovering around the room
-	var monolith_positions = [
-		Vector2(260, 420),
-		Vector2(260, 680),
-		Vector2(1020, 420),
-		Vector2(1020, 680)
+	# Grand Obsidian Spire Columns along Outer Walls
+	var side_spires = [
+		Vector2(140, 360), Vector2(140, 600), Vector2(140, 840),
+		Vector2(1140, 360), Vector2(1140, 600), Vector2(1140, 840)
 	]
-	
-	for i in range(monolith_positions.size()):
-		var pos = monolith_positions[i]
-		var rock := Sprite2D.new()
-		rock.texture = load(PATH_ROCK)
-		rock.modulate = Color(0.35, 0.15, 0.55, 0.95)
-		rock.scale = Vector2(1.6, 2.2)
-		rock.position = pos
-		rock.z_index = 0
-		add_child(rock)
-		
-		# Floating Bobbing Tween
-		var rtw = rock.create_tween().set_loops()
-		var delay = i * 0.4
-		rtw.tween_interval(delay)
-		rtw.tween_property(rock, "position:y", pos.y - 18.0, 1.4).set_trans(Tween.TRANS_SINE)
-		rtw.tween_property(rock, "position:y", pos.y + 8.0, 1.4).set_trans(Tween.TRANS_SINE)
-		
-		# Void crystal spark on top
-		var crystal := Sprite2D.new()
-		crystal.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_beige.png")
-		crystal.modulate = Color(2.5, 0.4, 3.5, 0.8)
-		crystal.scale = Vector2(0.4, 0.4)
-		crystal.position = Vector2(0, -22)
-		rock.add_child(crystal)
+	for sp in side_spires:
+		_spawn_spire(sp, Vector2(1.4, 1.4))
 
-func _spawn_brazier(pos: Vector2) -> void:
-	var rock := Sprite2D.new()
-	rock.texture = load(PATH_ROCK)
-	rock.modulate = Color(0.3, 0.2, 0.4)
-	rock.scale = Vector2(1.5, 1.5)
-	rock.position = pos
-	add_child(rock)
-	
-	var fire := Sprite2D.new()
-	fire.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_beige.png")
-	fire.modulate = Color(2.8, 0.4, 1.6, 0.9)
-	fire.scale = Vector2(0.65, 0.65)
-	fire.position = pos + Vector2(0, -20)
-	add_child(fire)
-	
-	var ftw = fire.create_tween().set_loops()
-	ftw.tween_property(fire, "scale", Vector2(0.8, 0.8), 0.35 + randf() * 0.1)
-	ftw.tween_property(fire, "scale", Vector2(0.55, 0.55), 0.35 + randf() * 0.1)
+func _spawn_spire(pos: Vector2, scl: Vector2) -> void:
+	var spire := Sprite2D.new()
+	spire.texture = load(PATH_TOWER)
+	spire.position = pos
+	spire.scale = scl
+	spire.modulate = Color(0.32, 0.18, 0.45, 1.0)
+	add_child(spire)
 
-func _spawn_prop(tex_path: String, pos: Vector2, scl: Vector2, has_collision: bool = false, col_mod: Color = Color.WHITE) -> void:
-	var tex = load(tex_path)
-	if not tex:
-		return
-	var spr := Sprite2D.new()
-	spr.texture = tex
-	spr.position = pos
-	spr.scale = scl
-	spr.modulate = col_mod
-	add_child(spr)
+	# Collision at base so hero and boss navigate properly around columns
+	var body := StaticBody2D.new()
+	body.collision_layer = 1
+	body.collision_mask = 6
+	var col := CollisionShape2D.new()
+	var box := RectangleShape2D.new()
+	box.size = Vector2(48 * scl.x, 24 * scl.y)
+	col.shape = box
+	col.position = pos + Vector2(0, 40 * scl.y)
+	body.add_child(col)
+	add_child(body)
 
-	if has_collision:
-		var body := StaticBody2D.new()
-		body.collision_layer = 1
-		body.collision_mask = 6
-		var shape := CollisionShape2D.new()
-		var box := RectangleShape2D.new()
-		box.size = Vector2(60 * scl.x, 30 * scl.y)
-		shape.shape = box
-		shape.position = pos + Vector2(0, 20)
-		body.add_child(shape)
-		add_child(body)
+func _setup_braziers() -> void:
+	# 6 Grand Braziers with real animated pixel art flame & dynamic point lighting
+	var brazier_positions = [
+		Vector2(360, 320), Vector2(920, 320),
+		Vector2(360, 540), Vector2(920, 540),
+		Vector2(360, 760), Vector2(920, 760)
+	]
+	for pos in brazier_positions:
+		_spawn_animated_brazier(pos)
+
+func _spawn_animated_brazier(pos: Vector2) -> void:
+	# 1. Carved Stone Plinth Base
+	var base := Sprite2D.new()
+	base.texture = load(PATH_ROCK4)
+	base.position = pos
+	base.scale = Vector2(1.5, 1.5)
+	base.modulate = Color(0.35, 0.22, 0.42, 1.0)
+	add_child(base)
+
+	# 2. Real Animated Hand-Drawn Pixel Art Flame
+	if fire_frames:
+		var fire := AnimatedSprite2D.new()
+		fire.sprite_frames = fire_frames
+		fire.play("burn")
+		fire.modulate = Color(2.8, 0.6, 2.0, 0.95) # Radiant abyssal violet flame
+		fire.scale = Vector2(1.15, 1.15)
+		fire.position = pos + Vector2(0, -32)
+		add_child(fire)
+
+	# 3. Dynamic Radial PointLight2D with Organic Flame Flicker
+	if light_texture:
+		var light := PointLight2D.new()
+		light.texture = light_texture
+		light.color = Color(1.8, 0.45, 1.3, 1.0)
+		light.energy = 1.15
+		light.texture_scale = 2.4
+		light.position = pos + Vector2(0, -28)
+		add_child(light)
+
+		var ltw = light.create_tween().set_loops()
+		ltw.tween_property(light, "energy", 1.35, randf_range(0.2, 0.35))
+		ltw.tween_property(light, "energy", 0.95, randf_range(0.2, 0.35))
+
+func _setup_ambient_embers() -> void:
+	# Volumetric Abyssal Embers drifting lazily across the throne hall
+	var embers := CPUParticles2D.new()
+	embers.name = "ThroneRoomEmbers"
+	embers.position = Vector2(640, 960)
+	embers.amount = 40
+	embers.lifetime = 4.5
+	embers.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	embers.emission_rect_extents = Vector2(600, 20)
+	embers.direction = Vector2(0, -1)
+	embers.spread = 15.0
+	embers.gravity = Vector2(0, -22)
+	embers.initial_velocity_min = 45.0
+	embers.initial_velocity_max = 85.0
+	embers.scale_amount_min = 2.0
+	embers.scale_amount_max = 3.5
+	embers.color = Color(2.6, 0.4, 1.5, 0.7)
+	embers.z_index = 4
+	add_child(embers)

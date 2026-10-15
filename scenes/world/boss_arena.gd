@@ -31,7 +31,7 @@ func _emit_quest_update(text: String) -> void:
 		qm.quest_updated.emit(text)
 
 func _ready() -> void:
-	_play_music("res://audio/music/Infinite Descent.ogg", -4.0)
+	_play_music("res://audio/music/the_gauntlet_and_the_dragon.ogg", -3.0)
 	_show_area_banner("The Ashen Crater", "Sanctum of General Gorgath")
 	_build_tiny_swords_boss_hud()
 
@@ -54,7 +54,7 @@ func _build_tiny_swords_boss_hud() -> void:
 	boss_hud_container.offset_top = 16.0
 	$CanvasLayer.add_child(boss_hud_container)
 
-	var game_font: FontFile = load("res://art/fonts/Fonts/SegoeUI-Bold.ttf")
+	var game_font: FontFile = load("res://art/fonts/Fonts/Kenney Future.ttf")
 
 	# Clean RPG wooden panel frame matching Player HUD
 	var panel := PanelContainer.new()
@@ -217,6 +217,7 @@ func _finalize_sacrifice(kaelen: Node2D, portal: Sprite2D) -> void:
 	])
 
 func _on_boss_defeated() -> void:
+	AudioManager.play_music("res://audio/music/power_to_the_hero.ogg", -2.5)
 	if boss_hud_container:
 		var tw := create_tween()
 		tw.tween_property(boss_hud_container, "modulate:a", 0.0, 1.0)

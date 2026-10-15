@@ -10,7 +10,7 @@ var boss_hp_bar: TextureProgressBar
 var boss_hp_label: Label
 
 func _ready() -> void:
-	AudioManager.play_music("res://audio/music/Infinite Descent.ogg", 0.5)
+	AudioManager.play_music("res://audio/music/duel_under_the_eclipse.ogg", -2.0)
 	SceneTransition.show_area_banner("The Nether Citadel", "Throne of NightBorne")
 	_build_boss_hud()
 	
@@ -26,6 +26,12 @@ func _ready() -> void:
 		
 	QuestManager.quest_updated.emit("Defeat NightBorne and sever the Doomsday Requiem!")
 	
+	# Frame both Arthur (y=780) and NightBorne (y=320) in camera during dialogue
+	if hero and hero.has_node("Camera2D"):
+		var cam: Camera2D = hero.get_node("Camera2D")
+		cam.top_level = true
+		cam.global_position = Vector2(640, 520)
+	
 	await get_tree().create_timer(0.5).timeout
 	_trigger_intro_dialogue()
 
@@ -35,9 +41,11 @@ func _build_boss_hud() -> void:
 	boss_hud_container.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	boss_hud_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	boss_hud_container.offset_top = 16.0
+	boss_hud_container.visible = false
+	boss_hud_container.modulate.a = 0.0
 	$CanvasLayer.add_child(boss_hud_container)
 
-	var game_font: FontFile = load("res://art/fonts/Fonts/SegoeUI-Bold.ttf")
+	var game_font: FontFile = load("res://art/fonts/Fonts/Kenney Future.ttf")
 
 	var panel := PanelContainer.new()
 	var style := StyleBoxTexture.new()
@@ -114,6 +122,22 @@ func _trigger_intro_dialogue() -> void:
 		{"speaker": "Kaelen's Echo", "text": "Arthur! Arthur, don't look at the core! He blinks behind you the moment you swing! Leap over his third void wave—DON'T LET HIM CAST!"},
 		{"speaker": "NightBorne", "text": "Silence, vessel! Let us see if your starlight blade can pierce eternal midnight!"}
 	], func():
+		# Fade in Boss HUD now that dialogue is complete
+		if boss_hud_container:
+			boss_hud_container.visible = true
+			var htw := create_tween()
+			htw.tween_property(boss_hud_container, "modulate:a", 1.0, 0.6)
+
+		# Pan camera back to track hero
+		if hero and hero.has_node("Camera2D"):
+			var cam: Camera2D = hero.get_node("Camera2D")
+			var ctw := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+			ctw.tween_property(cam, "global_position", hero.global_position, 0.7)
+			ctw.tween_callback(func():
+				cam.top_level = false
+				cam.position = Vector2.ZERO
+			)
+
 		if boss and is_instance_valid(boss) and boss.has_method("begin_combat"):
 			boss.begin_combat()
 	)
@@ -126,9 +150,11 @@ func _on_boss_hp_changed(curr: int, maximum: int) -> void:
 		boss_hp_label.text = "%d / %d" % [curr, maximum]
 
 func _on_boss_phase_changed(new_phase: int) -> void:
-	if new_phase == 2 and boss_title_label:
-		boss_title_label.text = "NIGHTBORNE — DOOMSDAY OVERDRIVE"
-		boss_title_label.add_theme_color_override("font_color", Color(1.0, 0.1, 0.2, 1.0))
+	if new_phase == 2:
+		AudioManager.play_music("res://audio/music/full_strength_unleashed.ogg", -2.0)
+		if boss_title_label:
+			boss_title_label.text = "NIGHTBORNE — DOOMSDAY OVERDRIVE"
+			boss_title_label.add_theme_color_override("font_color", Color(1.0, 0.1, 0.2, 1.0))
 
 func _on_final_stand_triggered() -> void:
 	# Visual & audio feedback without stopping combat with dialogue boxes
@@ -140,6 +166,7 @@ func _on_final_stand_triggered() -> void:
 		ctw.tween_property(cam, "offset", Vector2.ZERO, 0.15)
 
 func _on_boss_defeated() -> void:
+	AudioManager.play_music("res://audio/music/Sad Town.ogg", -2.0)
 	if boss_hud_container:
 		var tw := create_tween()
 		tw.tween_property(boss_hud_container, "modulate:a", 0.0, 1.0)
@@ -149,12 +176,21 @@ func _on_boss_defeated() -> void:
 	
 	# Spawn Kaelen's astral body on the red carpet
 	var kaelen := Sprite2D.new()
-	kaelen.texture = load("res://art/ui/rpg_expansion/PNG/iconCircle_beige.png")
-	kaelen.modulate = Color(2.8, 2.2, 0.8, 0.95)
-	kaelen.scale = Vector2(1.8, 1.8)
+	kaelen.texture = load("res://art/characters/adventurer/FREE_Adventurer 2D Pixel Art/Sprites/IDLE/idle_down.png")
+	kaelen.hframes = 8
+	kaelen.frame = 0
+	kaelen.modulate = Color(2.2, 1.8, 1.1, 0.95)
+	kaelen.scale = Vector2(1.5, 1.5)
 	kaelen.position = Vector2(640, 480)
 	add_child(kaelen)
 	
+	# Frame camera between Arthur and Kaelen
+	if hero and hero.has_node("Camera2D"):
+		var cam: Camera2D = hero.get_node("Camera2D")
+		cam.top_level = true
+		var ctw := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		ctw.tween_property(cam, "global_position", (hero.global_position + kaelen.global_position) * 0.5, 0.8)
+
 	await get_tree().create_timer(1.2).timeout
 	
 	dialogue_box.start_dialogue([

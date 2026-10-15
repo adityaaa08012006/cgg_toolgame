@@ -3,9 +3,9 @@
 [ext_resource type="Script" path="res://scenes/ui/dialogue_box.gd" id="1_dlg_script"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/panel_brown.png" id="2_panel_tex"]
 [ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/buttonLong_brown.png" id="3_banner_tex"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI-Bold.ttf" id="4_font_bold"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="4_font_bold"]
 [ext_resource type="Texture2D" path="res://art/ui/input_prompts/Keyboard & Mouse/Default/keyboard_e_outline.png" id="5_key_e"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI.ttf" id="6_font_regular"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Mini.ttf" id="6_font_regular"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wood"]
 texture = ExtResource("2_panel_tex")
@@ -33,9 +33,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -360.0
-offset_top = -160.0
-offset_right = 360.0
+offset_left = -440.0
+offset_top = -172.0
+offset_right = 440.0
 offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 0
@@ -48,32 +48,45 @@ theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer"]
+[node name="MainHBox" type="HBoxContainer" parent="PanelContainer/MarginContainer"]
 layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PortraitRect" type="TextureRect" parent="PanelContainer/MarginContainer/MainHBox"]
+texture_filter = 1
+custom_minimum_size = Vector2(110, 110)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ContentVBox" type="VBoxContainer" parent="PanelContainer/MarginContainer/MainHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="HeaderBox" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+[node name="HeaderBox" type="HBoxContainer" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox"]
 layout_mode = 2
 
-[node name="BannerPanel" type="PanelContainer" parent="PanelContainer/MarginContainer/VBoxContainer/HeaderBox"]
+[node name="BannerPanel" type="PanelContainer" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox/HeaderBox"]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_banner")
 
-[node name="SpeakerMargin" type="MarginContainer" parent="PanelContainer/MarginContainer/VBoxContainer/HeaderBox/BannerPanel"]
+[node name="SpeakerMargin" type="MarginContainer" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox/HeaderBox/BannerPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 2
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 2
 
-[node name="SpeakerLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/HeaderBox/BannerPanel/SpeakerMargin"]
+[node name="SpeakerLabel" type="Label" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox/HeaderBox/BannerPanel/SpeakerMargin"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
 theme_override_fonts/font = ExtResource("4_font_bold")
 theme_override_font_sizes/font_size = 15
 text = "Father Alden"
 
-[node name="TextLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer"]
+[node name="TextLabel" type="Label" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox"]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.92, 0.84, 1)
@@ -81,15 +94,15 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.75)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_fonts/font = ExtResource("6_font_regular")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "Without armor or weapon, you cannot face the darkness."
 autowrap_mode = 3
 
-[node name="FooterBox" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+[node name="FooterBox" type="HBoxContainer" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox"]
 layout_mode = 2
 alignment = 2
 
-[node name="KeyBadge" type="TextureRect" parent="PanelContainer/MarginContainer/VBoxContainer/FooterBox"]
+[node name="KeyBadge" type="TextureRect" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox/FooterBox"]
 texture_filter = 1
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
@@ -98,7 +111,7 @@ texture = ExtResource("5_key_e")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="PromptLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/FooterBox"]
+[node name="PromptLabel" type="Label" parent="PanelContainer/MarginContainer/MainHBox/ContentVBox/FooterBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.78, 0.65, 1)
 theme_override_fonts/font = ExtResource("4_font_bold")
