@@ -51,85 +51,87 @@ func _build_tiny_swords_boss_hud() -> void:
 	boss_hud_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	boss_hud_container.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	boss_hud_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	boss_hud_container.offset_top = 12.0
+	boss_hud_container.offset_top = 16.0
 	$CanvasLayer.add_child(boss_hud_container)
 
-	var game_font: FontFile = load("res://art/fonts/Fonts/Kenney Future.ttf")
+	var game_font: FontFile = load("res://art/fonts/Fonts/SegoeUI-Bold.ttf")
 
-	# Tiny Swords Red Title Ribbon NinePatch (Seamless assembled texture)
-	var ribbon := NinePatchRect.new()
-	ribbon.texture = load("res://art/ui/tinyswords/tinyswords_ribbon_red.png")
-	ribbon.patch_margin_left = 98
-	ribbon.patch_margin_top = 16
-	ribbon.patch_margin_right = 97
-	ribbon.patch_margin_bottom = 16
-	ribbon.axis_stretch_horizontal = NinePatchRect.AXIS_STRETCH_MODE_STRETCH
-	ribbon.axis_stretch_vertical = NinePatchRect.AXIS_STRETCH_MODE_STRETCH
-	ribbon.custom_minimum_size = Vector2(380, 44)
-	ribbon.size = Vector2(380, 44)
-	ribbon.position = Vector2(-190, 0)
-	boss_hud_container.add_child(ribbon)
+	# Clean RPG wooden panel frame matching Player HUD
+	var panel := PanelContainer.new()
+	var style := StyleBoxTexture.new()
+	style.texture = load("res://art/ui/rpg_expansion/PNG/panel_brown.png")
+	style.texture_margin_left = 14.0
+	style.texture_margin_top = 10.0
+	style.texture_margin_right = 14.0
+	style.texture_margin_bottom = 12.0
+	style.axis_stretch_horizontal = StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+	style.axis_stretch_vertical = StyleBoxTexture.AXIS_STRETCH_MODE_STRETCH
+	panel.add_theme_stylebox_override("panel", style)
+	panel.custom_minimum_size = Vector2(420, 68)
+	panel.size = Vector2(420, 68)
+	panel.position = Vector2(-210, 0)
+	boss_hud_container.add_child(panel)
 
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_top", 6)
+	margin.add_theme_constant_override("margin_bottom", 6)
+	panel.add_child(margin)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 6)
+	margin.add_child(vbox)
+
+	# Boss Name & Title Banner
 	boss_title_label = Label.new()
 	boss_title_label.text = "GENERAL GORGATH — DEMON VANGUARD"
 	boss_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	boss_title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	if game_font:
 		boss_title_label.add_theme_font_override("font", game_font)
-	boss_title_label.add_theme_font_size_override("font_size", 10)
-	boss_title_label.add_theme_color_override("font_color", Color(1.0, 0.95, 0.85))
+	boss_title_label.add_theme_font_size_override("font_size", 13)
+	boss_title_label.add_theme_color_override("font_color", Color(1.0, 0.45, 0.35))
 	boss_title_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
 	boss_title_label.add_theme_constant_override("shadow_offset_x", 1)
 	boss_title_label.add_theme_constant_override("shadow_offset_y", 1)
-	boss_title_label.position = Vector2(25, 2)
-	boss_title_label.size = Vector2(330, 38)
-	ribbon.add_child(boss_title_label)
+	vbox.add_child(boss_title_label)
 
-	# Tiny Swords Sword Icon on Left of HP Bar
-	var icon := TextureRect.new()
-	icon.texture = load("res://art/tiny_swords/UI Elements/UI Elements/Icons/Icon_05.png")
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.size = Vector2(20, 20)
-	icon.position = Vector2(-205, 46)
-	boss_hud_container.add_child(icon)
+	# Inset Bar Container
+	var bar_container := PanelContainer.new()
+	var inset_style := StyleBoxTexture.new()
+	inset_style.texture = load("res://art/ui/rpg_expansion/PNG/panelInset_brown.png")
+	inset_style.texture_margin_left = 4.0
+	inset_style.texture_margin_right = 4.0
+	inset_style.texture_margin_top = 4.0
+	inset_style.texture_margin_bottom = 4.0
+	bar_container.add_theme_stylebox_override("panel", inset_style)
+	vbox.add_child(bar_container)
 
-	# Tiny Swords BigBar Base & Aligned Fill
+	# Seamless RPG Bar textures
 	boss_hp_bar = TextureProgressBar.new()
-	var bar_base: Texture2D = load("res://art/ui/tinyswords/boss_bar_base.png")
-	var bar_fill: Texture2D = load("res://art/ui/tinyswords/boss_bar_fill_aligned.png")
-
-	boss_hp_bar.texture_under = bar_base
-	boss_hp_bar.texture_progress = bar_fill
+	boss_hp_bar.texture_under = load("res://art/ui/rpg_expansion/PNG/barBack_horizontalMid.png")
+	boss_hp_bar.texture_progress = load("res://art/ui/rpg_expansion/PNG/barRed_horizontalMid.png")
 	boss_hp_bar.nine_patch_stretch = true
-	boss_hp_bar.stretch_margin_left = 24
-	boss_hp_bar.stretch_margin_right = 24
-	boss_hp_bar.stretch_margin_top = 10
-	boss_hp_bar.stretch_margin_bottom = 10
-
-	boss_hp_bar.custom_minimum_size = Vector2(360, 24)
-	boss_hp_bar.size = Vector2(360, 24)
-	boss_hp_bar.position = Vector2(-180, 44)
+	boss_hp_bar.custom_minimum_size = Vector2(380, 20)
+	boss_hp_bar.size = Vector2(380, 20)
 	boss_hp_bar.max_value = boss.max_hp if boss else 550
 	boss_hp_bar.value = boss_hp_bar.max_value
-	boss_hp_bar.tint_progress = Color(0.95, 0.22, 0.22, 1.0)
-	boss_hud_container.add_child(boss_hp_bar)
+	bar_container.add_child(boss_hp_bar)
 
-	# Numeric HP Label over bar
+	# Numeric HP Label superimposed over bar
 	boss_hp_label = Label.new()
 	boss_hp_label.text = "%d / %d HP" % [int(boss_hp_bar.value), int(boss_hp_bar.max_value)]
 	boss_hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	boss_hp_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	if game_font:
 		boss_hp_label.add_theme_font_override("font", game_font)
-	boss_hp_label.add_theme_font_size_override("font_size", 9)
-	boss_hp_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
+	boss_hp_label.add_theme_font_size_override("font_size", 12)
+	boss_hp_label.add_theme_color_override("font_color", Color(1.0, 0.95, 0.85))
 	boss_hp_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
 	boss_hp_label.add_theme_constant_override("shadow_offset_x", 1)
 	boss_hp_label.add_theme_constant_override("shadow_offset_y", 1)
-	boss_hp_label.position = Vector2(-180, 44)
-	boss_hp_label.size = Vector2(360, 24)
-	boss_hud_container.add_child(boss_hp_label)
+	bar_container.add_child(boss_hp_label)
 
 func _on_boss_hp_changed(curr: int, maximum: int) -> void:
 	if boss_hp_bar:
