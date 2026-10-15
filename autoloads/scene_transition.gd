@@ -10,8 +10,8 @@ var divider: ColorRect
 var subtitle_label: Label
 var banner_tween: Tween
 
-var font_bold: FontFile = preload("res://art/fonts/Fonts/SegoeUI-Bold.ttf")
-var font_reg: FontFile = preload("res://art/fonts/Fonts/SegoeUI.ttf")
+var font_bold: FontFile = preload("res://art/fonts/Fonts/Kenney Future.ttf")
+var font_reg: FontFile = preload("res://art/fonts/Fonts/Kenney Future Narrow.ttf")
 var board_tex: Texture2D = preload("res://art/ui/rpg_expansion/PNG/panel_brown.png")
 
 func _ready() -> void:

@@ -1,9 +1,9 @@
 extends CharacterBody2D
 class_name Demon
 
-@export var max_hp: int = 80
+@export var max_hp: int = 35
 @export_enum("Red", "Black") var unit_color: String = "Red"
-var hp: int = 80
+var hp: int = 35
 var speed: float = 80.0
 var attack_cooldown: float = 0.0
 
@@ -144,7 +144,7 @@ func _spawn_coin_drop() -> void:
 	var coin_scene = preload("res://scenes/world/coin_pickup.tscn")
 	var coin = coin_scene.instantiate()
 	coin.global_position = global_position
-	get_parent().add_child(coin)
+	get_parent().call_deferred("add_child", coin)
 
 func _on_hit_area_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player") and attack_cooldown <= 0.0:

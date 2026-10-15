@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="5_dlg"]
 [ext_resource type="PackedScene" path="res://scenes/ui/game_hud.tscn" id="6_hud"]
 [ext_resource type="Texture2D" path="res://art/ui/input_prompts/Keyboard & Mouse/Default/keyboard_e_outline.png" id="7_key_e"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI-Bold.ttf" id="8_font"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="8_font"]
 [ext_resource type="Texture2D" path="res://art/characters/npcs/town-folk-2-free-v1.0/characters/potter/walk.png" id="9_potter"]
 [ext_resource type="Texture2D" path="res://art/characters/npcs/town-folk-2-free-v1.0/characters/errand_boy/walk.png" id="10_errand_boy"]
 [ext_resource type="Texture2D" path="res://art/characters/tiny_rpg_01/Tiny RPG Character Asset Pack 01 v2.0 -Free Soldier&Orc/Characters(100x100 split)/Soldier/Soldier with shadows/Soldier_Idle.png" id="11_soldier"]
@@ -194,7 +194,7 @@ stretch_mode = 5
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.98, 0.92, 1)
 theme_override_fonts/font = ExtResource("8_font")
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 10
 text = "Pray"
 vertical_alignment = 1
 

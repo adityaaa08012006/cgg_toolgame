@@ -1,0 +1,315 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/title_screen.gd" id="1_title_script"]
+[ext_resource type="Texture2D" path="res://startscreen.jpg" id="2_bg_tex"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI-Bold.ttf" id="3_font_bold"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI.ttf" id="4_font_regular"]
+[ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/panel_brown.png" id="5_panel_brown"]
+[ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/buttonLong_brown.png" id="6_btn_brown"]
+[ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/buttonLong_brown_pressed.png" id="7_btn_brown_press"]
+[ext_resource type="Texture2D" path="res://art/ui/rpg_expansion/PNG/buttonLong_beige.png" id="8_btn_beige"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_card"]
+texture = ExtResource("5_panel_brown")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn"]
+texture = ExtResource("6_btn_brown")
+texture_margin_left = 14.0
+texture_margin_top = 6.0
+texture_margin_right = 14.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_press"]
+texture = ExtResource("7_btn_brown_press")
+texture_margin_left = 14.0
+texture_margin_top = 8.0
+texture_margin_right = 14.0
+texture_margin_bottom = 6.0
+
+[node name="TitleScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_title_script")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_bg_tex")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Vignette" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.04, 0.02, 0.01, 0.20)
+
+[node name="UIContainer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MenuCard" type="PanelContainer" parent="UIContainer"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 64.0
+offset_top = -210.0
+offset_right = 490.0
+offset_bottom = 220.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_card")
+
+[node name="Margin" type="MarginContainer" parent="UIContainer/MenuCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="ContentVBox" type="VBoxContainer" parent="UIContainer/MenuCard/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TitleBox" type="VBoxContainer" parent="UIContainer/MenuCard/Margin/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="GameTitle" type="Label" parent="UIContainer/MenuCard/Margin/ContentVBox/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_shadow_color = Color(0.12, 0.08, 0.04, 0.95)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 28
+text = "HALF-MINUTE HERO"
+
+[node name="Subtitle" type="Label" parent="UIContainer/MenuCard/Margin/ContentVBox/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.82, 0.32, 1)
+theme_override_colors/font_shadow_color = Color(0.12, 0.08, 0.04, 0.95)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 14
+text = "CHRONICLES OF HAVEN"
+
+[node name="Tagline" type="Label" parent="UIContainer/MenuCard/Margin/ContentVBox/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.88, 0.8, 0.85)
+theme_override_colors/font_shadow_color = Color(0.1, 0.07, 0.04, 0.90)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("4_font_regular")
+theme_override_font_sizes/font_size = 12
+text = "30 seconds before doom. Strike fast, Champion!"
+
+[node name="Separator" type="ColorRect" parent="UIContainer/MenuCard/Margin/ContentVBox"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.45, 0.32, 0.2, 0.6)
+
+[node name="ButtonContainer" type="VBoxContainer" parent="UIContainer/MenuCard/Margin/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BtnStart" type="Button" parent="UIContainer/MenuCard/Margin/ContentVBox/ButtonContainer"]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+pivot_offset = Vector2(120, 24)
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.12, 0.08, 0.04, 0.95)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_press")
+text = "START ADVENTURE"
+
+[node name="BtnControls" type="Button" parent="UIContainer/MenuCard/Margin/ContentVBox/ButtonContainer"]
+custom_minimum_size = Vector2(240, 44)
+layout_mode = 2
+pivot_offset = Vector2(120, 22)
+theme_override_colors/font_color = Color(1, 0.92, 0.82, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.12, 0.08, 0.04, 0.95)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_press")
+text = "HOW TO PLAY"
+
+[node name="BtnQuit" type="Button" parent="UIContainer/MenuCard/Margin/ContentVBox/ButtonContainer"]
+custom_minimum_size = Vector2(240, 42)
+layout_mode = 2
+pivot_offset = Vector2(120, 21)
+theme_override_colors/font_color = Color(0.85, 0.78, 0.7, 0.9)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.12, 0.08, 0.04, 0.95)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_press")
+text = "QUIT"
+
+[node name="ControlsModal" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ModalBackdrop" type="ColorRect" parent="ControlsModal"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.70)
+
+[node name="ModalCard" type="PanelContainer" parent="ControlsModal"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -270.0
+offset_top = -210.0
+offset_right = 270.0
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_card")
+
+[node name="Margin" type="MarginContainer" parent="ControlsModal/ModalCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 18
+
+[node name="VBox" type="VBoxContainer" parent="ControlsModal/ModalCard/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ModalTitle" type="Label" parent="ControlsModal/ModalCard/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.45, 1)
+theme_override_colors/font_shadow_color = Color(0.12, 0.08, 0.04, 0.95)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 16
+text = "COMBAT & CONTROLS"
+horizontal_alignment = 1
+
+[node name="Separator" type="ColorRect" parent="ControlsModal/ModalCard/Margin/VBox"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.55, 0.42, 0.28, 0.6)
+
+[node name="GuideList" type="VBoxContainer" parent="ControlsModal/ModalCard/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 7
+
+[node name="MoveLine" type="Label" parent="ControlsModal/ModalCard/Margin/VBox/GuideList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.92, 0.84, 1)
+theme_override_fonts/font = ExtResource("4_font_regular")
+theme_override_font_sizes/font_size = 12
+text = "• WASD / Arrow Keys : Move Hero"
+
+[node name="AttackLine" type="Label" parent="ControlsModal/ModalCard/Margin/VBox/GuideList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.92, 0.84, 1)
+theme_override_fonts/font = ExtResource("4_font_regular")
+theme_override_font_sizes/font_size = 12
+text = "• J / Left Click : 3-Hit Sword Combo"
+
+[node name="BlockLine" type="Label" parent="ControlsModal/ModalCard/Margin/VBox/GuideList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.92, 0.84, 1)
+theme_override_fonts/font = ExtResource("4_font_regular")
+theme_override_font_sizes/font_size = 12
+text = "• K / Right Click : Shield Guard & 0.25s Parry"
+
+[node name="RollLine" type="Label" parent="ControlsModal/ModalCard/Margin/VBox/GuideList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.92, 0.84, 1)
+theme_override_fonts/font = ExtResource("4_font_regular")
+theme_override_font_sizes/font_size = 12
+text = "• Space / Shift : Invulnerable Dodge Roll"
+
+[node name="LeapLine" type="Label" parent="ControlsModal/ModalCard/Margin/VBox/GuideList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.82, 0.32, 1)
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 12
+text = "• L / Q / Middle Click : Leap Attack Slam (AOE & Stagger!)"
+
+[node name="InteractLine" type="Label" parent="ControlsModal/ModalCard/Margin/VBox/GuideList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.92, 0.84, 1)
+theme_override_fonts/font = ExtResource("4_font_regular")
+theme_override_font_sizes/font_size = 12
+text = "• E : Interact with NPCs, Altars & Gates"
+
+[node name="DoomLine" type="Label" parent="ControlsModal/ModalCard/Margin/VBox/GuideList"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.45, 0.35, 1)
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 11
+text = "★ DOOM TIMER: Purify the altar within 30s to avert the apocalypse!"
+
+[node name="BtnClose" type="Button" parent="ControlsModal/ModalCard/Margin/VBox"]
+custom_minimum_size = Vector2(160, 42)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.12, 0.08, 0.04, 0.95)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("3_font_bold")
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_press")
+text = "GOT IT"

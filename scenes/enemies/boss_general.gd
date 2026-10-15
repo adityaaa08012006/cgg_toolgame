@@ -46,13 +46,34 @@ var spell_warn_radius: float = 48.0
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
+var guard_break_label: Label
+
 func _ready() -> void:
 	hp = max_hp
 	add_to_group("enemies")
 	add_to_group("boss")
 	_load_textures()
+	_setup_guard_break_label()
 	current_state = State.WAITING
 	state_timer = 1.5
+
+func _setup_guard_break_label() -> void:
+	guard_break_label = Label.new()
+	var game_font: Font = load("res://art/fonts/Fonts/Kenney Future.ttf")
+	if not game_font:
+		game_font = ThemeDB.fallback_font
+	guard_break_label.add_theme_font_override("font", game_font)
+	guard_break_label.add_theme_font_size_override("font_size", 10)
+	guard_break_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.2, 1.0))
+	guard_break_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
+	guard_break_label.add_theme_constant_override("shadow_offset_x", 1)
+	guard_break_label.add_theme_constant_override("shadow_offset_y", 1)
+	guard_break_label.text = "GUARD BROKEN! (+50% DMG)"
+	guard_break_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	guard_break_label.position = Vector2(-120, -55)
+	guard_break_label.size = Vector2(240, 20)
+	guard_break_label.visible = false
+	add_child(guard_break_label)
 
 func _load_textures() -> void:
 	tex_idle  = load(PATH_BASE + "Idle.png")    # 8 frames
@@ -158,8 +179,10 @@ func _physics_process(delta: float) -> void:
 			sprite.frame = 1 # Reeling pose
 			if state_timer <= 0.0:
 				current_state = State.RECOVERY
-				state_timer = 1.0
+				state_timer = 0.35
 				sprite.modulate = Color.WHITE
+				if guard_break_label:
+					guard_break_label.visible = false
 
 		State.RECOVERY:
 			state_timer -= delta
@@ -167,7 +190,8 @@ func _physics_process(delta: float) -> void:
 			_play_anim(tex_idle, 8, 0.12, delta)
 			if state_timer <= 0.0:
 				current_state = State.CHASE
-				move_cooldown = 1.4
+				move_cooldown = 0.45
+				queue_redraw()
 
 func _play_anim(tex: Texture2D, total_frames: int, speed_dur: float, delta: float) -> void:
 	if sprite.texture != tex:
@@ -191,12 +215,12 @@ func _update_facing(look_left: bool) -> void:
 # --- Move 1: Abyssal Scythe Cleave (Blockable with Shield!) ---
 func _start_cleave_windup() -> void:
 	current_state = State.WINDUP_SWEEP
-	state_timer = 0.70 # Telegraph reaction window
+	state_timer = 0.30 # Telegraph reaction window
 	_play_sfx("res://audio/sfx/woosh2.ogg", -2.0)
 
 	var tw := create_tween()
-	tw.tween_property(sprite, "modulate", Color(2.5, 1.8, 0.4), 0.2)
-	tw.tween_property(sprite, "modulate", Color.WHITE, 0.25)
+	tw.tween_property(sprite, "modulate", Color(2.5, 1.8, 0.4), 0.12)
+	tw.tween_property(sprite, "modulate", Color.WHITE, 0.14)
 
 func _execute_cleave() -> void:
 	if current_state == State.DEAD:
@@ -212,22 +236,31 @@ func _execute_cleave() -> void:
 		sprite.frame = i
 		if i == 4:
 			_hit_cleave_target(22, 115.0)
-		await get_tree().create_timer(0.055).timeout
+		await get_tree().create_timer(0.035).timeout
 
 	if current_state != State.DEAD:
 		current_state = State.RECOVERY
-		state_timer = 1.2
+		state_timer = 0.35
 
-# --- Move 2: Dark Eruption (Dodgeable, leaves him STAGGERED!) ---
+func play_cast_cutscene(_duration: float = 2.0) -> void:
+	if sprite and tex_cast:
+		sprite.texture = tex_cast
+		sprite.hframes = 9
+		sprite.frame = 4
+		var tw := create_tween()
+		tw.tween_property(sprite, "modulate", Color(2.2, 0.3, 2.5), 0.3)
+		tw.tween_property(sprite, "modulate", Color.WHITE, 0.4)
+
+# --- Move 2: Dark Eruption (Dodgeable, leaves him STAGGERED ONLY IF HE MISSES!) ---
 func _start_spell_windup(target_pos: Vector2) -> void:
 	current_state = State.WINDUP_SPELL
-	state_timer = 0.90 # Ground warning window
+	state_timer = 0.70 # Ground warning window
 	spell_warn_pos = target_pos
 	_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", -2.0)
 
 	var tw := create_tween()
-	tw.tween_property(sprite, "modulate", Color(2.2, 0.3, 0.3), 0.25)
-	tw.tween_property(sprite, "modulate", Color.WHITE, 0.3)
+	tw.tween_property(sprite, "modulate", Color(2.2, 0.3, 0.3), 0.20)
+	tw.tween_property(sprite, "modulate", Color.WHITE, 0.25)
 
 func _execute_spell() -> void:
 	if current_state == State.DEAD:
@@ -236,16 +269,39 @@ func _execute_spell() -> void:
 	_play_sfx("res://audio/sfx/explosionCrunch_000.ogg", 2.0)
 
 	# Erupt spell pillar at warned position
-	_spawn_spell_pillar(spell_warn_pos)
+	var target_pos := spell_warn_pos
 	spell_warn_pos = Vector2.ZERO
 
-	# General exhausts dark energy and enters Staggered vulnerability
-	current_state = State.STAGGERED
-	state_timer = 2.2
-	sprite.texture = tex_hurt
-	sprite.hframes = 3
-	sprite.frame = 1
-	sprite.modulate = Color(0.7, 1.0, 2.0) # Glowing blue/gold stagger hue
+	# Synchronous check: did the eruption hit the player?
+	var player_hit: bool = false
+	var player: Node2D = get_tree().get_first_node_in_group("player") as Node2D
+	if player and player.global_position.distance_to(target_pos) <= spell_warn_radius:
+		player.take_damage(28, target_pos)
+		player_hit = true
+
+	# Fire visual pillar animation
+	_spawn_spell_pillar(target_pos)
+
+	if player_hit:
+		# Attack CONNECTED: Boss maintains composure, recovery without guard break
+		current_state = State.RECOVERY
+		state_timer = 0.35
+		sprite.texture = tex_idle
+		sprite.hframes = 8
+		sprite.frame = 0
+		sprite.modulate = Color.WHITE
+		if guard_break_label:
+			guard_break_label.visible = false
+	else:
+		# Attack MISSED (Player dodged!): Boss overextends and suffers Guard Break Stagger!
+		current_state = State.STAGGERED
+		state_timer = 1.5
+		sprite.texture = tex_hurt
+		sprite.hframes = 3
+		sprite.frame = 1
+		sprite.modulate = Color(0.7, 1.0, 2.0) # Glowing blue/gold stagger hue
+		if guard_break_label:
+			guard_break_label.visible = true
 
 func _spawn_spell_pillar(pos: Vector2) -> void:
 	var pillar := Sprite2D.new()
@@ -257,16 +313,15 @@ func _spawn_spell_pillar(pos: Vector2) -> void:
 	pillar.modulate = Color(1.8, 0.4, 0.4, 1.0)
 	get_parent().add_child(pillar)
 
-	# Check hit on player during apex
-	var player: Node2D = get_tree().get_first_node_in_group("player") as Node2D
-	if player and player.global_position.distance_to(pos) <= spell_warn_radius:
-		player.take_damage(28, pos)
-
-	# Animate and free
-	for f in range(16):
-		pillar.frame = f
-		await get_tree().create_timer(0.045).timeout
-	pillar.queue_free()
+	var tw := create_tween()
+	tw.tween_method(func(frame_val: int):
+		if is_instance_valid(pillar):
+			pillar.frame = frame_val
+	, 0, 15, 0.52)
+	tw.tween_callback(func():
+		if is_instance_valid(pillar):
+			pillar.queue_free()
+	)
 
 func _hit_cleave_target(amount: int, reach: float) -> void:
 	if current_state == State.DEAD:
@@ -309,6 +364,9 @@ func _die() -> void:
 	remove_from_group("enemies")
 	remove_from_group("boss")
 	set_physics_process(false)
+	if guard_break_label:
+		guard_break_label.visible = false
+	queue_redraw()
 	if collision_shape:
 		collision_shape.set_deferred("disabled", true)
 	var hitbox = get_node_or_null("HitBox")
@@ -324,20 +382,19 @@ func _die() -> void:
 	sprite.hframes = 10
 	for i in range(10):
 		sprite.frame = i
-		await get_tree().create_timer(0.10).timeout
+		await get_tree().create_timer(0.08).timeout
 
-	# Fade remainder into shadow
+	# Fade remainder into shadow and queue_free
 	var tw := create_tween()
-	tw.tween_property(sprite, "modulate:a", 0.0, 0.6)
+	tw.tween_property(self, "modulate:a", 0.0, 0.4)
+	tw.tween_callback(queue_free)
 
 func _draw() -> void:
+	if current_state == State.DEAD:
+		return
+
 	# Ground warning rune for Dark Eruption
 	if current_state == State.WINDUP_SPELL and spell_warn_pos != Vector2.ZERO:
 		var local_warn := to_local(spell_warn_pos)
 		draw_circle(local_warn, spell_warn_radius, Color(0.9, 0.1, 0.2, 0.25))
 		draw_arc(local_warn, spell_warn_radius, 0, TAU, 32, Color(1.0, 0.2, 0.2, 0.85), 2.2)
-
-	# Floating Vulnerability text when staggered
-	elif current_state == State.STAGGERED:
-		var font: Font = ThemeDB.fallback_font
-		draw_string(font, Vector2(-60, -55), "GUARD BROKEN! (+50% DMG)", HORIZONTAL_ALIGNMENT_CENTER, -1, 10, Color(1.0, 0.9, 0.2, 1.0))

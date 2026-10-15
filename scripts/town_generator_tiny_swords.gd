@@ -429,7 +429,7 @@ func _generate_wildlife_and_decorations() -> void:
 
 		nature_node.add_child(gold_body)
 
-func _spawn_grazing_sheep(pos: Vector2, delay: float) -> Node2D:
+func _spawn_grazing_sheep(pos: Vector2, _delay: float) -> Node2D:
 	var sheep := StaticBody2D.new()
 	sheep.position = pos
 	sheep.collision_layer = 1

@@ -58,8 +58,11 @@ shape = SubResource("RectangleShape2D_east")
 [node name="BossGeneral" parent="." instance=ExtResource("5_boss")]
 position = Vector2(640, 330)
 
+[node name="Kaelen" parent="." instance=ExtResource("4_kaelen")]
+position = Vector2(580, 500)
+
 [node name="Hero" parent="." instance=ExtResource("3_hero")]
-position = Vector2(640, 500)
+position = Vector2(670, 500)
 
 [node name="Camera2D" type="Camera2D" parent="Hero"]
 position_smoothing_enabled = true

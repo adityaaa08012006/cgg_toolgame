@@ -30,25 +30,26 @@ func _ready() -> void:
 func _setup_smith_interaction() -> void:
 	smith_npc.npc_name = "Master Torren"
 	smith_npc.dialogue_lines = [
-		"Father Alden's prayer reached my anvil! The Demon Lord's apocalypse spell has begun!",
-		"Take this Valorous Knight Armor and the Sunfire Blade!",
-		"Two shadow demons guard the South Gate! Slay them, take their gold, and offer 100 gold at the Central Altar to unseal the road!"
+		"Arthur, you're awake! Praise the celestial light! Kaelen carried you here through fire and ash after Oakhaven fell.",
+		"Before marching north to the pass, he grabbed my anvil and made me swear I would forge your arms before the demon horde strikes.",
+		"Take this Sunfire Blade and Knight's Plate—infused with the very star-ember that spared your life!",
+		"Two shadow demons guard the South Gate! Slay them, gather 100 gold, and purify the Goddess Altar to unseal the road to Kaelen!"
 	]
 	smith_npc.dialogue_completed.connect(on_smith_equip_gear)
 
 func _setup_herbalist_interaction() -> void:
 	herbalist_npc.npc_name = "Eldrin the Herbalist"
 	herbalist_npc.dialogue_lines = [
-		"The wind carries the stench of brimstone... The Demon Lord's Doomsday curse is upon us.",
-		"Normal steel cannot pierce shadow beasts. Master Torren's forge lies just west.",
-		"Slay the fiends, harvest their 100 gold, and the Goddess will shatter the gate ward!"
+		"The falling star that struck the cathedral was a miracle from the ancients, young knight.",
+		"Kaelen's devotion to you is unbreakable—he watched your pulse for days without closing his eyes.",
+		"Arm yourself at the forge, break the demon blockade at the South Gate, and ride to your brother's side!"
 	]
 
 func _setup_sentinel_interaction() -> void:
 	sentinel_npc.npc_name = "Sentinel Gareth"
 	sentinel_npc.dialogue_lines = [
-		"Halt! The South Gate is sealed tight by dark sorcery. None may pass unarmed into slaughter.",
-		"Seek Master Torren at the forge to arm yourself before confronting the demons at the gate!"
+		"Halt, Arthur! Kaelen gave strict orders not to let you through unarmed. Master Torren's forge lies west.",
+		"Once you are armed, slay the demons, purify the Goddess Altar, and we will open the way to the Ashen Ridge!"
 	]
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -132,7 +133,7 @@ func _on_church_door_entered(body: Node2D) -> void:
 			"Cathedral of Father Alden"
 		)
 
-func _on_quest_updated(text: String) -> void:
+func _on_quest_updated(_text: String) -> void:
 	pass
 
 func _on_quest_completed() -> void:

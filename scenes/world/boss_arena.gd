@@ -6,8 +6,9 @@ extends Node2D
 
 # Tiny Swords Boss HUD
 var boss_hud_container: Control
-var boss_hp_bar: TextureProgressBar
 var boss_title_label: Label
+var boss_hp_bar: TextureProgressBar
+var boss_hp_label: Label
 
 func _play_music(path: String, vol: float = -4.0) -> void:
 	var am = get_node_or_null("/root/AudioManager")
@@ -34,6 +35,10 @@ func _ready() -> void:
 	_show_area_banner("The Ashen Crater", "Sanctum of General Gorgath")
 	_build_tiny_swords_boss_hud()
 
+	var game_hud = get_node_or_null("CanvasLayer/GameHUD")
+	if game_hud and game_hud.has_node("ObjectiveBanner"):
+		game_hud.get_node("ObjectiveBanner").visible = false
+
 	if boss:
 		boss.hp_changed.connect(_on_boss_hp_changed)
 		boss.defeated.connect(_on_boss_defeated)
@@ -46,55 +51,167 @@ func _build_tiny_swords_boss_hud() -> void:
 	boss_hud_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	boss_hud_container.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	boss_hud_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	boss_hud_container.offset_top = 18.0
+	boss_hud_container.offset_top = 12.0
 	$CanvasLayer.add_child(boss_hud_container)
 
-	# Tiny Swords Boss Title Ribbon
+	var game_font: FontFile = load("res://art/fonts/Fonts/Kenney Future.ttf")
+
+	# Tiny Swords Red Title Ribbon NinePatch (Seamless assembled texture)
+	var ribbon := NinePatchRect.new()
+	ribbon.texture = load("res://art/ui/tinyswords/tinyswords_ribbon_red.png")
+	ribbon.patch_margin_left = 98
+	ribbon.patch_margin_top = 16
+	ribbon.patch_margin_right = 97
+	ribbon.patch_margin_bottom = 16
+	ribbon.axis_stretch_horizontal = NinePatchRect.AXIS_STRETCH_MODE_STRETCH
+	ribbon.axis_stretch_vertical = NinePatchRect.AXIS_STRETCH_MODE_STRETCH
+	ribbon.custom_minimum_size = Vector2(380, 44)
+	ribbon.size = Vector2(380, 44)
+	ribbon.position = Vector2(-190, 0)
+	boss_hud_container.add_child(ribbon)
+
 	boss_title_label = Label.new()
 	boss_title_label.text = "GENERAL GORGATH — DEMON VANGUARD"
 	boss_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var bold_font: FontFile = load("res://art/fonts/Fonts/SegoeUI-Bold.ttf")
-	if bold_font:
-		boss_title_label.add_theme_font_override("font", bold_font)
-	boss_title_label.add_theme_font_size_override("font_size", 13)
-	boss_title_label.add_theme_color_override("font_color", Color(1.0, 0.88, 0.4))
+	boss_title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	if game_font:
+		boss_title_label.add_theme_font_override("font", game_font)
+	boss_title_label.add_theme_font_size_override("font_size", 10)
+	boss_title_label.add_theme_color_override("font_color", Color(1.0, 0.95, 0.85))
 	boss_title_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
 	boss_title_label.add_theme_constant_override("shadow_offset_x", 1)
 	boss_title_label.add_theme_constant_override("shadow_offset_y", 1)
-	boss_title_label.position = Vector2(-200, 0)
-	boss_title_label.size = Vector2(400, 20)
-	boss_hud_container.add_child(boss_title_label)
+	boss_title_label.position = Vector2(25, 2)
+	boss_title_label.size = Vector2(330, 38)
+	ribbon.add_child(boss_title_label)
 
-	# Tiny Swords BigBar Base & Fill TextureProgressBar
+	# Tiny Swords Sword Icon on Left of HP Bar
+	var icon := TextureRect.new()
+	icon.texture = load("res://art/tiny_swords/UI Elements/UI Elements/Icons/Icon_05.png")
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.size = Vector2(20, 20)
+	icon.position = Vector2(-205, 46)
+	boss_hud_container.add_child(icon)
+
+	# Tiny Swords BigBar Base & Aligned Fill
 	boss_hp_bar = TextureProgressBar.new()
-	var bar_base: Texture2D = load("res://art/tiny_swords/UI Elements/UI Elements/Bars/BigBar_Base.png")
-	var bar_fill: Texture2D = load("res://art/tiny_swords/UI Elements/UI Elements/Bars/BigBar_Fill.png")
+	var bar_base: Texture2D = load("res://art/ui/tinyswords/boss_bar_base.png")
+	var bar_fill: Texture2D = load("res://art/ui/tinyswords/boss_bar_fill_aligned.png")
 
 	boss_hp_bar.texture_under = bar_base
 	boss_hp_bar.texture_progress = bar_fill
 	boss_hp_bar.nine_patch_stretch = true
-	boss_hp_bar.stretch_margin_left = 32
-	boss_hp_bar.stretch_margin_right = 32
-	boss_hp_bar.stretch_margin_top = 16
-	boss_hp_bar.stretch_margin_bottom = 16
+	boss_hp_bar.stretch_margin_left = 24
+	boss_hp_bar.stretch_margin_right = 24
+	boss_hp_bar.stretch_margin_top = 10
+	boss_hp_bar.stretch_margin_bottom = 10
 
-	boss_hp_bar.custom_minimum_size = Vector2(420, 36)
-	boss_hp_bar.size = Vector2(420, 36)
-	boss_hp_bar.position = Vector2(-210, 20)
+	boss_hp_bar.custom_minimum_size = Vector2(360, 24)
+	boss_hp_bar.size = Vector2(360, 24)
+	boss_hp_bar.position = Vector2(-180, 44)
 	boss_hp_bar.max_value = boss.max_hp if boss else 550
 	boss_hp_bar.value = boss_hp_bar.max_value
 	boss_hp_bar.tint_progress = Color(0.95, 0.22, 0.22, 1.0)
 	boss_hud_container.add_child(boss_hp_bar)
 
+	# Numeric HP Label over bar
+	boss_hp_label = Label.new()
+	boss_hp_label.text = "%d / %d HP" % [int(boss_hp_bar.value), int(boss_hp_bar.max_value)]
+	boss_hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	boss_hp_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	if game_font:
+		boss_hp_label.add_theme_font_override("font", game_font)
+	boss_hp_label.add_theme_font_size_override("font_size", 9)
+	boss_hp_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
+	boss_hp_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
+	boss_hp_label.add_theme_constant_override("shadow_offset_x", 1)
+	boss_hp_label.add_theme_constant_override("shadow_offset_y", 1)
+	boss_hp_label.position = Vector2(-180, 44)
+	boss_hp_label.size = Vector2(360, 24)
+	boss_hud_container.add_child(boss_hp_label)
+
 func _on_boss_hp_changed(curr: int, maximum: int) -> void:
 	if boss_hp_bar:
 		boss_hp_bar.max_value = maximum
 		var tw := create_tween()
-		tw.tween_property(boss_hp_bar, "value", float(curr), 0.2).set_trans(Tween.TRANS_CUBIC)
+		tw.tween_property(boss_hp_bar, "value", float(curr), 0.18).set_trans(Tween.TRANS_CUBIC)
+	if boss_hp_label:
+		boss_hp_label.text = "%d / %d HP" % [max(0, curr), maximum]
 
 func _trigger_boss_intro() -> void:
+	var kaelen = get_node_or_null("Kaelen")
+	if not kaelen:
+		dialogue_box.start_dialogue([
+			{"speaker": "General Gorgath", "text": "Foolish mortal! You have stepped into the domain of the shadow vanguard! Fall before the Bringer of Death!"}
+		])
+		return
+
+	# Step 1: Pre-battle dialogue before the sacrifice
 	dialogue_box.start_dialogue([
-		{"speaker": "General Gorgath", "text": "Foolish mortal! You have stepped into the domain of the shadow vanguard! Fall before the Bringer of Death!"}
+		{"speaker": "Kaelen of Oakhaven", "text": "Gorgath! The fiend who led the legion that massacred our village!"},
+		{"speaker": "General Gorgath", "text": "Hahaha! The surviving orphans of Oakhaven? Crawling together into my crater like cornered rats?"},
+		{"speaker": "Kaelen of Oakhaven", "text": "We are no longer victims, demon! Arthur carries the celestial star of retribution. We will burn your vanguard to ash!"},
+		{"speaker": "General Gorgath", "text": "Such touching defiance! A soul burning with unyielding brotherly love... The Demon Lord's dark altar will feast upon your devotion!"}
+	], func():
+		_execute_portal_sacrifice_sequence(kaelen)
+	)
+
+func _execute_portal_sacrifice_sequence(kaelen: Node2D) -> void:
+	if boss and boss.has_method("play_cast_cutscene"):
+		boss.play_cast_cutscene(3.0)
+
+	_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", 2.0)
+
+	# Spawn swirling abyss portal beneath Kaelen
+	var portal := Sprite2D.new()
+	portal.texture = load("res://art/characters/enemies/Bringer-Of-Death/sheets/Spell.png")
+	portal.hframes = 16
+	portal.frame = 8
+	portal.scale = Vector2(2.8, 1.4)
+	portal.modulate = Color(2.5, 0.2, 3.0, 0.0)
+	portal.global_position = kaelen.global_position + Vector2(0, 10)
+	portal.z_index = kaelen.z_index - 1
+	add_child(portal)
+
+	var ptw := create_tween()
+	ptw.parallel().tween_property(portal, "modulate:a", 1.0, 0.4)
+	ptw.parallel().tween_property(portal, "scale", Vector2(3.2, 1.6), 0.5)
+
+	var ktw := kaelen.create_tween()
+	ktw.parallel().tween_property(kaelen, "position:y", kaelen.position.y - 28.0, 0.6)
+	ktw.parallel().tween_property(kaelen, "modulate", Color(0.6, 0.1, 1.4, 0.9), 0.6)
+
+	await get_tree().create_timer(0.6).timeout
+	_play_sfx("res://audio/sfx/woosh3.ogg", 2.0)
+
+	dialogue_box.start_dialogue([
+		{"speaker": "Kaelen of Oakhaven", "text": "Aaargh! Abyssal chains! The rift is dragging me into the Demon Lord's inner sanctum!"},
+		{"speaker": "Kaelen of Oakhaven", "text": "Arthur! Look at me! Don't let him break your focus! Slay Gorgath, shatter their vanguard, and come find me!"},
+		{"speaker": "Kaelen of Oakhaven", "text": "I will endure whatever torture they bring! PROMISE ME YOU WILL SURVIVE, BROTHER!"}
+	], func():
+		_finalize_sacrifice(kaelen, portal)
+	)
+
+func _finalize_sacrifice(kaelen: Node2D, portal: Sprite2D) -> void:
+	_play_sfx("res://audio/sfx/explosionCrunch_000.ogg", 3.0)
+
+	var itw := create_tween()
+	itw.parallel().tween_property(kaelen, "scale", Vector2.ZERO, 0.35)
+	itw.parallel().tween_property(kaelen, "rotation", 3.14, 0.35)
+	itw.parallel().tween_property(portal, "scale", Vector2.ZERO, 0.4)
+	itw.parallel().tween_property(portal, "modulate", Color(4.0, 0.5, 5.0, 0.0), 0.4)
+
+	await itw.finished
+	if is_instance_valid(kaelen):
+		kaelen.queue_free()
+	if is_instance_valid(portal):
+		portal.queue_free()
+
+	await get_tree().create_timer(0.3).timeout
+
+	dialogue_box.start_dialogue([
+		{"speaker": "General Gorgath", "text": "A touching farewell! Your brother now kneels before our Dark Master's throne. Now bleed, little champion!"}
 	])
 
 func _on_boss_defeated() -> void:
@@ -103,7 +220,7 @@ func _on_boss_defeated() -> void:
 		tw.tween_property(boss_hud_container, "modulate:a", 0.0, 1.0)
 		tw.tween_callback(boss_hud_container.queue_free)
 
-	_emit_quest_update("General Gorgath defeated! The demon vanguard has fallen!")
+	_emit_quest_update("Vanguard defeated! Advance to the Demon Lord's Citadel to save Kaelen!")
 	_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", 2.0)
 
 	# Spawn Doom Core Item in center
@@ -117,5 +234,7 @@ func _on_boss_defeated() -> void:
 	await get_tree().create_timer(1.2).timeout
 
 	dialogue_box.start_dialogue([
-		{"speaker": "Narrator", "text": "VICTORY! General Gorgath has fallen! The pathway to the Demon Lord's Citadel is now open!"}
+		{"speaker": "Narrator", "text": "General Gorgath dissolves into shadow. Through the shattered vanguard archway, Kaelen's faint voice echoes across the rift..."},
+		{"speaker": "Kaelen's Whisper", "text": "Arthur... I can feel your victory... I'm holding on... don't give up... come find me..."},
+		{"speaker": "Narrator", "text": "The path to the Demon Lord's Citadel is unsealed. With the Sunfire Blade in hand, you march into the abyss to save your brother."}
 	])

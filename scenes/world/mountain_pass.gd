@@ -43,8 +43,9 @@ func _on_gateway_entered(body: Node2D) -> void:
 			gateway_reached = true
 			_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg")
 			dialogue_box.start_dialogue([
-				{"speaker": "Kaelen of Oakhaven", "text": "This is it! The Vanguard Gateway! Gorgath's demon reinforcements are already swarming behind us!"},
-				{"speaker": "Kaelen of Oakhaven", "text": "I will hold the gateway and keep the demon horde at bay! Step into the sanctum, brother—slay General Gorgath!"},
+				{"speaker": "Kaelen of Oakhaven", "text": "The iron portal of the Citadel... Arthur, look at me before we cross this threshold."},
+				{"speaker": "Kaelen of Oakhaven", "text": "Seeing you alive gave me my soul back. Whatever darkness lies beyond these gates, know that I am proud to fight beside you."},
+				{"speaker": "Kaelen of Oakhaven", "text": "For Oakhaven, and for Haven... let's end Gorgath's reign of terror together, brother!"},
 				{"speaker": "Narrator", "text": "CHAPTER II: THE ASHEN CRATER — GENERAL GORGATH"}
 			], func():
 				_change_scene(

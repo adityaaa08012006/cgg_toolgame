@@ -101,11 +101,11 @@ func start_dialogue() -> void:
 	var dlg_box = get_tree().get_first_node_in_group("dialogue_box")
 	if dlg_box:
 		var lines: Array[Dictionary] = [
-			{"speaker": "Kaelen of Oakhaven", "text": "Halt, warrior! You bear the Sunfire Blade of Haven... Then Father Alden's prayer was heard."},
-			{"speaker": "Kaelen of Oakhaven", "text": "I am Kaelen. My home village of Oakhaven was reduced to ash by the demon vanguard."},
-			{"speaker": "Kaelen of Oakhaven", "text": "We cannot face the Demon Lord directly yet. His forward fortress is guarded by General Malidrax, the Ashen Dread."},
-			{"speaker": "Kaelen of Oakhaven", "text": "Malidrax holds the seal to the inner domain. Together, our blades can bring him down."},
-			{"speaker": "Kaelen of Oakhaven", "text": "Let us breach the Vanguard Gateway ahead and storm the citadel together!"}
+			{"speaker": "Kaelen of Oakhaven", "text": "Arthur?! You're standing... by the light, you really survived!"},
+			{"speaker": "Kaelen of Oakhaven", "text": "When Oakhaven burned to ash, I thought I'd lost you. I dragged you through the embers with my bare hands, refusing to let you die."},
+			{"speaker": "Kaelen of Oakhaven", "text": "And then the sky split open... That falling celestial star blessed your heart, brother! The heavens answered our prayers."},
+			{"speaker": "Kaelen of Oakhaven", "text": "We swore as boys we would protect each other to our last breath. My sword and shield belong to your light, Arthur."},
+			{"speaker": "Kaelen of Oakhaven", "text": "General Gorgath and the vanguard are just beyond the ridge. Together, as brothers, let's avenge our fallen home!"}
 		]
 		dlg_box.start_dialogue(lines, _on_dialogue_finished)
 	else:
@@ -240,7 +240,7 @@ func _perform_ally_attack(target: Node2D) -> void:
 		sprite.frame = 0
 		sprite.modulate = Color.WHITE
 
-func take_damage(amount: int) -> void:
+func take_damage(_amount: int) -> void:
 	_play_sfx("res://audio/sfx/impactPunch_medium_000.ogg", -4.0)
 	var tw := create_tween()
 	tw.tween_property(sprite, "modulate", Color(2.5, 0.3, 0.3), 0.1)
@@ -289,4 +289,3 @@ func _on_interact_body_exited(body: Node2D) -> void:
 		player_in_interact_range = false
 		if prompt_container:
 			prompt_container.visible = false
-

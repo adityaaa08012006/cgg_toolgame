@@ -1,10 +1,11 @@
 extends CanvasLayer
 
-@onready var hp_bar: TextureProgressBar = $HUDPanel/VBox/HPRow/HPBar
-@onready var hp_label: Label = $HUDPanel/VBox/HPRow/HPVal
-@onready var coins_label: Label = $HUDPanel/VBox/StatsRow/CoinVal
-@onready var timer_label: Label = $HUDPanel/VBox/TimerRow/TimerVal
-@onready var objective_label: Label = $ObjectiveBanner/ObjectiveText
+@onready var hp_bar: TextureProgressBar = find_child("HPBar", true, false) as TextureProgressBar
+@onready var hp_label: Label = find_child("HPVal", true, false) as Label
+@onready var coins_label: Label = find_child("CoinVal", true, false) as Label
+@onready var timer_label: Label = find_child("TimerVal", true, false) as Label
+@onready var skill_label: Label = find_child("SkillVal", true, false) as Label
+@onready var objective_label: Label = find_child("ObjectiveText", true, false) as Label
 
 func _ready() -> void:
 	GameManager.player_health_changed.connect(_on_health_changed)
@@ -13,10 +14,31 @@ func _ready() -> void:
 	GameManager.doom_expired.connect(_on_doom_expired)
 	QuestManager.quest_updated.connect(_on_quest_updated)
 
+	var player = get_tree().get_first_node_in_group("player")
+	if player and player.has_signal("leap_cooldown_changed"):
+		player.leap_cooldown_changed.connect(_on_leap_cooldown_changed)
+
 	_on_health_changed(GameManager.player_hp, GameManager.player_max_hp)
 	_on_coins_changed(GameManager.player_coins)
 	_on_doom_tick(GameManager.doom_timer)
 	_on_quest_updated("Speak with Master Torren at the Forge.")
+
+func _process(_delta: float) -> void:
+	if skill_label and not skill_label.has_meta("connected"):
+		var player = get_tree().get_first_node_in_group("player")
+		if player and player.has_signal("leap_cooldown_changed"):
+			if not player.leap_cooldown_changed.is_connected(_on_leap_cooldown_changed):
+				player.leap_cooldown_changed.connect(_on_leap_cooldown_changed)
+			skill_label.set_meta("connected", true)
+
+func _on_leap_cooldown_changed(remaining: float, _max_dur: float) -> void:
+	if skill_label:
+		if remaining <= 0.0:
+			skill_label.text = "READY"
+			skill_label.add_theme_color_override("font_color", Color(0.4, 1.0, 0.5))
+		else:
+			skill_label.text = "%.1fs" % remaining
+			skill_label.add_theme_color_override("font_color", Color(0.9, 0.7, 0.3))
 
 func _on_health_changed(hp: int, max_hp: int) -> void:
 	if hp_bar:

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scenes/allies/kaelen.gd" id="1_kaelen_script"]
 [ext_resource type="Texture2D" path="res://art/characters/adventurer/FREE_Adventurer 2D Pixel Art/Sprites/IDLE/idle_down.png" id="2_idle_down"]
 [ext_resource type="Texture2D" path="res://art/ui/input_prompts/Keyboard & Mouse/Default/keyboard_e_outline.png" id="3_key_e"]
-[ext_resource type="FontFile" path="res://art/fonts/Fonts/SegoeUI-Bold.ttf" id="4_font"]
+[ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="4_font"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
 radius = 8.0
@@ -87,6 +87,6 @@ stretch_mode = 5
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.98, 0.92, 1)
 theme_override_fonts/font = ExtResource("4_font")
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 10
 text = "Talk"
 vertical_alignment = 1
