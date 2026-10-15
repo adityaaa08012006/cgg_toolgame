@@ -125,7 +125,7 @@ func _physics_process(delta: float) -> void:
 			_play_anim(tex_idle, 8, 0.12, delta)
 			if state_timer <= 0.0:
 				current_state = State.CHASE
-				move_cooldown = 0.8
+				move_cooldown = 1.20
 
 		State.CHASE:
 			if move_cooldown > 0.0:
@@ -179,7 +179,7 @@ func _physics_process(delta: float) -> void:
 			sprite.frame = 1 # Reeling pose
 			if state_timer <= 0.0:
 				current_state = State.RECOVERY
-				state_timer = 0.35
+				state_timer = 0.60
 				sprite.modulate = Color.WHITE
 				if guard_break_label:
 					guard_break_label.visible = false
@@ -190,7 +190,7 @@ func _physics_process(delta: float) -> void:
 			_play_anim(tex_idle, 8, 0.12, delta)
 			if state_timer <= 0.0:
 				current_state = State.CHASE
-				move_cooldown = 0.45
+				move_cooldown = 1.30
 				queue_redraw()
 
 func _play_anim(tex: Texture2D, total_frames: int, speed_dur: float, delta: float) -> void:
@@ -215,12 +215,12 @@ func _update_facing(look_left: bool) -> void:
 # --- Move 1: Abyssal Scythe Cleave (Blockable with Shield!) ---
 func _start_cleave_windup() -> void:
 	current_state = State.WINDUP_SWEEP
-	state_timer = 0.30 # Telegraph reaction window
+	state_timer = 0.65 # Clear telegraph reaction window for parry/block
 	_play_sfx("res://audio/sfx/woosh2.ogg", -2.0)
 
 	var tw := create_tween()
-	tw.tween_property(sprite, "modulate", Color(2.5, 1.8, 0.4), 0.12)
-	tw.tween_property(sprite, "modulate", Color.WHITE, 0.14)
+	tw.tween_property(sprite, "modulate", Color(2.5, 1.8, 0.4), 0.25)
+	tw.tween_property(sprite, "modulate", Color.WHITE, 0.30)
 
 func _execute_cleave() -> void:
 	if current_state == State.DEAD:
@@ -236,11 +236,11 @@ func _execute_cleave() -> void:
 		sprite.frame = i
 		if i == 4:
 			_hit_cleave_target(22, 115.0)
-		await get_tree().create_timer(0.035).timeout
+		await get_tree().create_timer(0.045).timeout
 
 	if current_state != State.DEAD:
 		current_state = State.RECOVERY
-		state_timer = 0.35
+		state_timer = 0.90
 
 func play_cast_cutscene(_duration: float = 2.0) -> void:
 	if sprite and tex_cast:
@@ -254,13 +254,13 @@ func play_cast_cutscene(_duration: float = 2.0) -> void:
 # --- Move 2: Dark Eruption (Dodgeable, leaves him STAGGERED ONLY IF HE MISSES!) ---
 func _start_spell_windup(target_pos: Vector2) -> void:
 	current_state = State.WINDUP_SPELL
-	state_timer = 0.70 # Ground warning window
+	state_timer = 1.05 # Ample ground warning window to roll away
 	spell_warn_pos = target_pos
 	_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", -2.0)
 
 	var tw := create_tween()
-	tw.tween_property(sprite, "modulate", Color(2.2, 0.3, 0.3), 0.20)
-	tw.tween_property(sprite, "modulate", Color.WHITE, 0.25)
+	tw.tween_property(sprite, "modulate", Color(2.2, 0.3, 0.3), 0.35)
+	tw.tween_property(sprite, "modulate", Color.WHITE, 0.40)
 
 func _execute_spell() -> void:
 	if current_state == State.DEAD:
@@ -285,7 +285,7 @@ func _execute_spell() -> void:
 	if player_hit:
 		# Attack CONNECTED: Boss maintains composure, recovery without guard break
 		current_state = State.RECOVERY
-		state_timer = 0.35
+		state_timer = 0.90
 		sprite.texture = tex_idle
 		sprite.hframes = 8
 		sprite.frame = 0
@@ -295,7 +295,7 @@ func _execute_spell() -> void:
 	else:
 		# Attack MISSED (Player dodged!): Boss overextends and suffers Guard Break Stagger!
 		current_state = State.STAGGERED
-		state_timer = 1.5
+		state_timer = 1.8
 		sprite.texture = tex_hurt
 		sprite.hframes = 3
 		sprite.frame = 1
