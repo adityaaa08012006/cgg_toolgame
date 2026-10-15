@@ -15,7 +15,6 @@ const PATH_ROCK1           := "res://art/tiny_swords/Terrain/Decorations/Rocks/R
 const PATH_ROCK2           := "res://art/tiny_swords/Terrain/Decorations/Rocks/Rock2.png"
 const PATH_ROCK3           := "res://art/tiny_swords/Terrain/Decorations/Rocks/Rock3.png"
 const PATH_ROCK4           := "res://art/tiny_swords/Terrain/Decorations/Rocks/Rock4.png"
-const PATH_BUSH            := "res://art/tiny_swords/Terrain/Decorations/Bushes/Bushe1.png"
 const PATH_FIRE_ANIM       := "res://art/tiny_swords/Particle FX/Fire_02.png"
 
 var ground_layer: TileMapLayer
@@ -192,15 +191,6 @@ func _setup_perimeter_crags() -> void:
 		var rtex := PATH_ROCK2 if r % 2 == 0 else PATH_ROCK3
 		_spawn_prop(rtex, Vector2(50, r * TILE_SZ + 32), Vector2(1.3, 1.3), true)
 		_spawn_prop(rtex, Vector2((MAP_WIDTH - 1) * TILE_SZ + 15, r * TILE_SZ + 32), Vector2(1.3, 1.3), true)
-
-	# Scorched thorny bushes
-	var bush_positions: Array[Vector2] = [
-		Vector2(200, 310), Vector2(1080, 310),
-		Vector2(210, 680), Vector2(1070, 680),
-		Vector2(310, 880), Vector2(970, 880)
-	]
-	for bpos in bush_positions:
-		_spawn_prop(PATH_BUSH, bpos, Vector2(1.0, 1.0), false)
 
 func _setup_ambient_war_embers() -> void:
 	var embers := CPUParticles2D.new()
