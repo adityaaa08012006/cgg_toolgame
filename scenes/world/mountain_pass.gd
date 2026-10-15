@@ -51,9 +51,7 @@ func _on_gateway_entered(body: Node2D) -> void:
 				{"speaker": "Narrator", "text": "CHAPTER II: THE ASHEN CRATER — GENERAL GORGATH"}
 			], func():
 				_change_scene(
-					"res://scenes/world/boss_arena.tscn",
-					"The Ashen Crater",
-					"Sanctum of General Gorgath"
+					"res://scenes/ui/gateway_cutscene.tscn"
 				)
 			)
 			_emit_quest_update("Breach the Vanguard Gateway and confront General Gorgath!")

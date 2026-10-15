@@ -12,6 +12,10 @@ var cutscenes: Array[Dictionary] = [
 		"subtitle": "In the abyssal heights of the Nether Peak, the Demon Lord unleashes the Doomsday Requiem..."
 	},
 	{
+		"stream": "res://cutscenes/knights_rescue.ogv",
+		"subtitle": "Brothers bound by an ancient oath... When Oakhaven burned, Kaelen carried Arthur through suffocating ash and flame."
+	},
+	{
 		"stream": "res://cutscenes/hero_blessing.ogv",
 		"subtitle": "Through the shattered skies, an ancient celestial star descends... blessing the fallen champion of Haven."
 	}
