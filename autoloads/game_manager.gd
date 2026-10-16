@@ -16,11 +16,22 @@ var has_armor: bool = false
 var has_sword: bool = false
 var is_epilogue: bool = false
 
+# Checkpoint System
+var checkpoint_scene: String = "res://scenes/world/town_tiny_swords.tscn"
+var checkpoint_position: Vector2 = Vector2.ZERO
+var checkpoint_name: String = "Haven Town"
+var checkpoint_has_armor: bool = false
+var checkpoint_has_sword: bool = false
+var is_respawning: bool = false
+
 signal doom_tick(time_remaining: float)
 signal doom_expired
 signal coins_changed(new_amount: int)
 signal player_health_changed(hp: int, max_hp: int)
 signal state_changed(new_state: GameState)
+signal checkpoint_saved(checkpoint_name: String)
+signal game_over_triggered
+signal game_paused(is_paused: bool)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -87,3 +98,39 @@ func reset_game() -> void:
 	player_health_changed.emit(player_hp, player_max_hp)
 	coins_changed.emit(player_coins)
 	set_game_state(GameState.PLAYING)
+
+func set_checkpoint(scene_path: String, pos: Vector2, cp_name: String = "") -> void:
+	checkpoint_scene = scene_path
+	checkpoint_position = pos
+	if cp_name != "":
+		checkpoint_name = cp_name
+	checkpoint_has_armor = has_armor
+	checkpoint_has_sword = has_sword
+	checkpoint_saved.emit(checkpoint_name)
+
+func is_checkpoint_for_current_scene(scene_path: String) -> bool:
+	if checkpoint_scene == scene_path:
+		return true
+	if "town" in checkpoint_scene and "town" in scene_path:
+		return true
+	return false
+
+func trigger_game_over() -> void:
+	set_game_state(GameState.GAME_OVER)
+	game_over_triggered.emit()
+
+func respawn_at_checkpoint() -> void:
+	is_respawning = true
+	player_hp = player_max_hp
+	has_armor = checkpoint_has_armor
+	has_sword = checkpoint_has_sword
+	player_health_changed.emit(player_hp, player_max_hp)
+	set_game_state(GameState.PLAYING)
+	if doom_active:
+		doom_timer = MAX_DOOM_TIME
+	get_tree().paused = false
+	var st = get_node_or_null("/root/SceneTransition")
+	if st and st.has_method("change_scene"):
+		st.change_scene(checkpoint_scene, checkpoint_name, "Checkpoint Restored")
+	else:
+		get_tree().change_scene_to_file(checkpoint_scene)

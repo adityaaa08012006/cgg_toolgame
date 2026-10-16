@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/game_hud.tscn" id="6_hud"]
 [ext_resource type="Texture2D" path="res://art/ui/input_prompts/Keyboard & Mouse/Default/keyboard_e_outline.png" id="7_key_e"]
 [ext_resource type="FontFile" path="res://art/fonts/Fonts/Kenney Future.ttf" id="8_font"]
-[ext_resource type="Texture2D" path="res://art/characters/npcs/town-folk-2-free-v1.0/characters/potter/walk.png" id="9_potter"]
+[ext_resource type="Texture2D" path="res://art/characters/npcs/town-folk-2-free-v1.0/characters/night_watchman/walk.png" id="9_night_watchman"]
 [ext_resource type="Texture2D" path="res://art/characters/npcs/town-folk-2-free-v1.0/characters/errand_boy/walk.png" id="10_errand_boy"]
 [ext_resource type="Texture2D" path="res://art/characters/tiny_rpg_01/Tiny RPG Character Asset Pack 01 v2.0 -Free Soldier&Orc/Characters(100x100 split)/Soldier/Soldier with shadows/Soldier_Idle.png" id="11_soldier"]
 [ext_resource type="Texture2D" path="res://art/props/goddess_shrine.png" id="12_goddess_shrine"]
@@ -122,7 +122,7 @@ position_smoothing_speed = 8.0
 [node name="MasterTorren" parent="." instance=ExtResource("4_npc")]
 position = Vector2(272, 400)
 npc_name = "Master Torren"
-character_texture = ExtResource("9_potter")
+character_texture = ExtResource("9_night_watchman")
 
 [node name="Eldrin" parent="." instance=ExtResource("4_npc")]
 position = Vector2(880, 400)

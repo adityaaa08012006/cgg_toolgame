@@ -12,6 +12,7 @@ var boss_hp_label: Label
 func _ready() -> void:
 	AudioManager.play_music("res://audio/music/duel_under_the_eclipse.ogg", -2.0)
 	SceneTransition.show_area_banner("The Nether Citadel", "Throne of NightBorne")
+	GameManager.set_checkpoint("res://scenes/world/throne_room.tscn", Vector2(640, 780), "Throne of NightBorne")
 	_build_boss_hud()
 	
 	var game_hud = get_node_or_null("CanvasLayer/GameHUD")

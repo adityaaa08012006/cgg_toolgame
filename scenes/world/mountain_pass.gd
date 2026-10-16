@@ -31,6 +31,12 @@ func _emit_quest_update(text: String) -> void:
 func _ready() -> void:
 	_play_music("res://audio/music/brave_reaction.ogg", -4.0)
 	_emit_quest_update("Seek the lone warrior along the Ashen Ridge")
+	GameManager.set_checkpoint("res://scenes/world/mountain_pass.tscn", Vector2(100, 360), "The Ashen Ridge")
+
+	if kaelen:
+		kaelen.kaelen_joined.connect(func():
+			GameManager.set_checkpoint("res://scenes/world/mountain_pass.tscn", Vector2(600, 360), "Ashen Vanguard Pass")
+		)
 
 	if gateway_trigger:
 		gateway_trigger.body_entered.connect(_on_gateway_entered)

@@ -19,6 +19,8 @@ func _ready() -> void:
 	else:
 		AudioManager.play_music("res://audio/music/Sad Town.ogg", -6.0)
 
+	GameManager.set_checkpoint("res://scenes/world/town_tiny_swords.tscn", Vector2(640, 520), "Haven Town")
+
 	altar_trigger.body_entered.connect(_on_altar_entered)
 	altar_trigger.body_exited.connect(_on_altar_exited)
 	south_gate_trigger.body_entered.connect(_on_south_gate_entered)
@@ -138,6 +140,8 @@ func _on_altar_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		altar_player_in_range = true
 		$GoddessAltarArea/PromptContainer.visible = true
+		GameManager.heal(100)
+		GameManager.set_checkpoint("res://scenes/world/town_tiny_swords.tscn", Vector2(640, 616), "Goddess Shrine")
 
 func _on_altar_exited(body: Node2D) -> void:
 	if body.is_in_group("player"):

@@ -55,6 +55,12 @@ func _ready() -> void:
 		attack_hitbox.monitoring = false
 		attack_hitbox.body_entered.connect(_on_attack_hitbox_body_entered)
 
+	if GameManager.is_respawning and GameManager.checkpoint_position != Vector2.ZERO:
+		global_position = GameManager.checkpoint_position
+		GameManager.is_respawning = false
+
+	GameManager.state_changed.connect(_on_game_state_changed)
+
 func _physics_process(delta: float) -> void:
 	if current_state == State.DEAD:
 		return
@@ -454,6 +460,8 @@ func take_damage(amount: int, attacker_pos: Vector2 = Vector2.ZERO) -> void:
 			GameManager.take_damage(chip)
 			if SceneTransition and SceneTransition.has_method("spawn_damage_number"):
 				SceneTransition.spawn_damage_number(global_position, chip, Color(0.6, 0.8, 1.0))
+			if GameManager.player_hp <= 0:
+				die()
 			return
 
 	GameManager.take_damage(amount)
@@ -463,6 +471,42 @@ func take_damage(amount: int, attacker_pos: Vector2 = Vector2.ZERO) -> void:
 	var tween := create_tween()
 	tween.tween_property(sprite, "modulate", Color(3.0, 0.2, 0.2), 0.1)
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.1)
+
+	if GameManager.player_hp <= 0:
+		die()
+
+func die() -> void:
+	if current_state == State.DEAD:
+		return
+	current_state = State.DEAD
+	velocity = Vector2.ZERO
+	is_attacking = false
+	is_rolling = false
+	is_blocking = false
+	is_leaping = false
+
+	if attack_hitbox:
+		attack_hitbox.monitoring = false
+	if collision_shape:
+		collision_shape.set_deferred("disabled", true)
+
+	AudioManager.play_sfx("res://audio/sfx/impactPunch_heavy_000.ogg", 2.0)
+	AudioManager.play_sfx("res://audio/sfx/explosionCrunch_000.ogg", -2.0)
+
+	sprite.texture = TEX_DEATH
+	sprite.hframes = 15
+	sprite.vframes = 1
+
+	for f in range(15):
+		sprite.frame = f
+		await get_tree().create_timer(0.065).timeout
+
+	await get_tree().create_timer(0.35).timeout
+	GameManager.trigger_game_over()
+
+func _on_game_state_changed(new_state: GameManager.GameState) -> void:
+	if new_state == GameManager.GameState.GAME_OVER and current_state != State.DEAD:
+		die()
 
 func _on_attack_hitbox_body_entered(body: Node2D) -> void:
 	if body.is_in_group("enemies") and body.has_method("take_damage"):

@@ -35,6 +35,7 @@ func _emit_quest_update(text: String) -> void:
 func _ready() -> void:
 	_play_music("res://audio/music/the_gauntlet_and_the_dragon.ogg", -3.0)
 	_show_area_banner("The Ashen Crater", "Sanctum of General Gorgath")
+	GameManager.set_checkpoint("res://scenes/world/boss_arena.tscn", Vector2(640, 680), "The Ashen Crater")
 	_build_tiny_swords_boss_hud()
 
 	var game_hud = get_node_or_null("CanvasLayer/GameHUD")
