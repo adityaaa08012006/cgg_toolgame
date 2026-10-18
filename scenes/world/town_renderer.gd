@@ -33,10 +33,7 @@ const TILE_SZ: float = 64.0
 const COLS: int = 20
 const ROWS: int = 20
 
-var anim_time: float = 0.0
-
-func _process(delta: float) -> void:
-	anim_time += delta
+func _ready() -> void:
 	queue_redraw()
 
 func _draw() -> void:

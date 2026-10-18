@@ -22,10 +22,20 @@ func _on_bgm_finished() -> void:
 	if bgm_player and bgm_player.stream:
 		bgm_player.play()
 
-func play_music(stream_path: String, volume_db: float = -6.0) -> void:
+var _stream_cache: Dictionary = {}
+
+func _get_stream(stream_path: String) -> AudioStream:
+	if _stream_cache.has(stream_path):
+		return _stream_cache[stream_path]
 	if not FileAccess.file_exists(stream_path):
-		return
-	var stream = load(stream_path)
+		return null
+	var stream: AudioStream = load(stream_path) as AudioStream
+	if stream:
+		_stream_cache[stream_path] = stream
+	return stream
+
+func play_music(stream_path: String, volume_db: float = -6.0) -> void:
+	var stream := _get_stream(stream_path)
 	if stream:
 		if stream is AudioStreamOggVorbis:
 			stream.loop = true
@@ -41,9 +51,7 @@ func stop_music() -> void:
 	bgm_player.stop()
 
 func play_sfx(stream_path: String, volume_db: float = 0.0) -> void:
-	if not FileAccess.file_exists(stream_path):
-		return
-	var stream = load(stream_path)
+	var stream := _get_stream(stream_path)
 	if stream:
 		for p in sfx_players:
 			if not p.playing:

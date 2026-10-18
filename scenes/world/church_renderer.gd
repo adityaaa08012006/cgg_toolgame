@@ -24,10 +24,7 @@ const GLASS_GOLD := Color(0.95, 0.78, 0.25, 1.0)
 const LIGHT_RAY := Color(1.0, 0.96, 0.75, 0.11)
 const LIGHT_CORE := Color(1.0, 0.98, 0.82, 0.18)
 
-var anim_time: float = 0.0
-
-func _process(delta: float) -> void:
-	anim_time += delta
+func _ready() -> void:
 	queue_redraw()
 
 func _draw() -> void:

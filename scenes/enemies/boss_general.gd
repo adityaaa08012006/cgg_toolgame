@@ -107,8 +107,6 @@ func _physics_process(delta: float) -> void:
 	if hit_invulnerable_timer > 0.0:
 		hit_invulnerable_timer -= delta
 
-	queue_redraw()
-
 	if _is_in_dialogue():
 		velocity = Vector2.ZERO
 		_play_anim(tex_idle, 8, 0.12, delta)
@@ -256,6 +254,7 @@ func _start_spell_windup(target_pos: Vector2) -> void:
 	current_state = State.WINDUP_SPELL
 	state_timer = 1.05 # Ample ground warning window to roll away
 	spell_warn_pos = target_pos
+	queue_redraw()
 	_play_sfx("res://audio/kenney_rpg/Audio/magic1.ogg", -2.0)
 
 	var tw := create_tween()
@@ -271,6 +270,7 @@ func _execute_spell() -> void:
 	# Erupt spell pillar at warned position
 	var target_pos := spell_warn_pos
 	spell_warn_pos = Vector2.ZERO
+	queue_redraw()
 
 	# Synchronous check: did the eruption hit the player?
 	var player_hit: bool = false
