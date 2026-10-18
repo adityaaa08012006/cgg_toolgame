@@ -121,7 +121,6 @@ func on_smith_equip_gear() -> void:
 		GameManager.has_sword = true
 		GameManager.has_armor = true
 		AudioManager.play_sfx("res://audio/kenney_rpg/Audio/metalClick.ogg")
-		GameManager.start_doom_countdown(30.0)
 
 		# Spawn the 2 demons at South Gate road (near gate y=1152)
 		var demon1 = demon_scene.instantiate()

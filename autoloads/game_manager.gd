@@ -45,23 +45,11 @@ func toggle_fullscreen() -> void:
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
-func _process(delta: float) -> void:
-	if doom_active and doom_timer > 0.0:
-		doom_timer -= delta
-		doom_tick.emit(doom_timer)
-		if doom_timer <= 0.0:
-			doom_timer = 0.0
-			doom_active = false
-			doom_expired.emit()
-			set_game_state(GameState.GAME_OVER)
-
-func start_doom_countdown(duration: float = 30.0) -> void:
-	doom_timer = duration
-	doom_active = true
-	doom_tick.emit(doom_timer)
+func start_doom_countdown(_duration: float = 30.0) -> void:
+	pass
 
 func stop_doom_countdown() -> void:
-	doom_active = false
+	pass
 
 func take_damage(amount: int) -> void:
 	player_hp = max(0, player_hp - amount)

@@ -3,15 +3,12 @@ extends CanvasLayer
 @onready var hp_bar: TextureProgressBar = find_child("HPBar", true, false) as TextureProgressBar
 @onready var hp_label: Label = find_child("HPVal", true, false) as Label
 @onready var coins_label: Label = find_child("CoinVal", true, false) as Label
-@onready var timer_label: Label = find_child("TimerVal", true, false) as Label
 @onready var skill_label: Label = find_child("SkillVal", true, false) as Label
 @onready var objective_label: Label = find_child("ObjectiveText", true, false) as Label
 
 func _ready() -> void:
 	GameManager.player_health_changed.connect(_on_health_changed)
 	GameManager.coins_changed.connect(_on_coins_changed)
-	GameManager.doom_tick.connect(_on_doom_tick)
-	GameManager.doom_expired.connect(_on_doom_expired)
 	QuestManager.quest_updated.connect(_on_quest_updated)
 
 	var player = get_tree().get_first_node_in_group("player")
@@ -20,7 +17,6 @@ func _ready() -> void:
 
 	_on_health_changed(GameManager.player_hp, GameManager.player_max_hp)
 	_on_coins_changed(GameManager.player_coins)
-	_on_doom_tick(GameManager.doom_timer)
 	_on_quest_updated("Speak with Master Torren at the Forge.")
 
 func _process(_delta: float) -> void:
@@ -54,23 +50,6 @@ func _on_health_changed(hp: int, max_hp: int) -> void:
 func _on_coins_changed(coins: int) -> void:
 	if coins_label:
 		coins_label.text = str(coins) + " G"
-
-func _on_doom_tick(time_remaining: float) -> void:
-	if timer_label:
-		if GameManager.doom_active:
-			timer_label.text = "%.1fs" % time_remaining
-			if time_remaining <= 10.0:
-				timer_label.add_theme_color_override("font_color", Color(1.0, 0.2, 0.2))
-			else:
-				timer_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
-		else:
-			timer_label.text = "--"
-			timer_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
-
-func _on_doom_expired() -> void:
-	if timer_label:
-		timer_label.text = "0.0s (DOOM!)"
-		timer_label.add_theme_color_override("font_color", Color(1.0, 0.1, 0.1))
 
 func _on_quest_updated(text: String) -> void:
 	if objective_label:

@@ -126,7 +126,7 @@ theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_fonts/font = ExtResource("4_font_regular")
 theme_override_font_sizes/font_size = 12
-text = "30 seconds before doom. Strike fast, Champion!"
+text = "Strike fast and liberate the realm, Champion!"
 
 [node name="Separator" type="ColorRect" parent="UIContainer/MenuCard/Margin/ContentVBox"]
 custom_minimum_size = Vector2(0, 2)
@@ -290,13 +290,6 @@ theme_override_colors/font_color = Color(0.96, 0.92, 0.84, 1)
 theme_override_fonts/font = ExtResource("4_font_regular")
 theme_override_font_sizes/font_size = 12
 text = "• E : Interact with NPCs, Altars & Gates"
-
-[node name="DoomLine" type="Label" parent="ControlsModal/ModalCard/Margin/VBox/GuideList"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.45, 0.35, 1)
-theme_override_fonts/font = ExtResource("3_font_bold")
-theme_override_font_sizes/font_size = 11
-text = "★ DOOM TIMER: Purify the altar within 30s to avert the apocalypse!"
 
 [node name="BtnClose" type="Button" parent="ControlsModal/ModalCard/Margin/VBox"]
 custom_minimum_size = Vector2(160, 42)

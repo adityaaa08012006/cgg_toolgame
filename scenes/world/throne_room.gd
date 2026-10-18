@@ -25,7 +25,7 @@ func _ready() -> void:
 		boss.final_stand_triggered.connect(_on_final_stand_triggered)
 		boss.defeated.connect(_on_boss_defeated)
 		
-	QuestManager.quest_updated.emit("Defeat NightBorne and sever the Doomsday Requiem!")
+	QuestManager.quest_updated.emit("Defeat NightBorne and restore the realm!")
 	
 	# Frame both Arthur (y=780) and NightBorne (y=320) in camera during dialogue
 	if hero and hero.has_node("Camera2D"):
