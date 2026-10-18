@@ -83,7 +83,7 @@ grow_vertical = 0
 theme_override_colors/font_color = Color(1, 1, 1, 0.6)
 theme_override_fonts/font = ExtResource("3_font")
 theme_override_font_sizes/font_size = 12
-text = "Press SPACE or Click to Skip"
+text = "Press SPACE to Skip"
 horizontal_alignment = 2
 
 [node name="FadeRect" type="ColorRect" parent="."]
