@@ -12,7 +12,7 @@ config_version=5
 
 config/name="HalfMinuteHero"
 run/main_scene="res://scenes/ui/title_screen.tscn"
-config/features=PackedStringArray("4.7", "gl_compatibility")
+config/features=PackedStringArray("4.7", "Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
