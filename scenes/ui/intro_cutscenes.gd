@@ -28,7 +28,7 @@ var is_ending: bool = false
 var elapsed_time: float = 0.0
 
 func _ready() -> void:
-	AudioManager.stop_music()
+	AudioManager.play_music("res://audio/music/Sad Descent.ogg", -4.0)
 	
 	fade_rect.modulate.a = 1.0
 	fade_rect.visible = true
@@ -96,5 +96,5 @@ func _finish_all_cutscenes() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if is_ending:
 		return
-	if event.is_action_pressed("ui_accept") or event.is_action_pressed("interact") or (event is InputEventMouseButton and event.pressed) or (event is InputEventKey and event.pressed and (event.keycode == KEY_SPACE or event.keycode == KEY_ESCAPE or event.keycode == KEY_ENTER)):
+	if event.is_action_pressed("ui_accept") or event.is_action_pressed("interact") or (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) or (event is InputEventKey and event.pressed and (event.keycode == KEY_SPACE or event.keycode == KEY_ESCAPE or event.keycode == KEY_ENTER)):
 		_on_video_finished()

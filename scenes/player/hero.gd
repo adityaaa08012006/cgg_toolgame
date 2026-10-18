@@ -14,7 +14,7 @@ var is_rolling: bool = false
 var is_blocking: bool = false
 var is_leaping: bool = false
 var attack_cooldown: float = 0.0
-var roll_cooldown: float = 0.0
+var roll_cooldown: float = 0.0	
 var leap_cooldown: float = 0.0
 const LEAP_COOLDOWN_MAX: float = 3.5
 signal leap_cooldown_changed(remaining: float, max_dur: float)

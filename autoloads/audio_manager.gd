@@ -24,10 +24,15 @@ func _on_bgm_finished() -> void:
 
 var _stream_cache: Dictionary = {}
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_pressed():
+		if bgm_player and bgm_player.stream and not bgm_player.playing:
+			bgm_player.play()
+
 func _get_stream(stream_path: String) -> AudioStream:
 	if _stream_cache.has(stream_path):
 		return _stream_cache[stream_path]
-	if not FileAccess.file_exists(stream_path):
+	if not ResourceLoader.exists(stream_path):
 		return null
 	var stream: AudioStream = load(stream_path) as AudioStream
 	if stream:
