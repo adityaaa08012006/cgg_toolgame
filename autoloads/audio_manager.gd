@@ -18,15 +18,19 @@ func _ready() -> void:
 		add_child(p)
 		sfx_players.append(p)
 
+var _music_wanted: bool = false
+var _unlocked_audio: bool = false
+
 func _on_bgm_finished() -> void:
-	if bgm_player and bgm_player.stream:
+	if _music_wanted and bgm_player and bgm_player.stream:
 		bgm_player.play()
 
 var _stream_cache: Dictionary = {}
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_pressed():
-		if bgm_player and bgm_player.stream and not bgm_player.playing:
+	if not _unlocked_audio and event.is_pressed():
+		_unlocked_audio = true
+		if _music_wanted and bgm_player and bgm_player.stream and not bgm_player.playing:
 			bgm_player.play()
 
 func _get_stream(stream_path: String) -> AudioStream:
@@ -40,6 +44,7 @@ func _get_stream(stream_path: String) -> AudioStream:
 	return stream
 
 func play_music(stream_path: String, volume_db: float = -6.0) -> void:
+	_music_wanted = true
 	var stream := _get_stream(stream_path)
 	if stream:
 		if stream is AudioStreamOggVorbis:
@@ -53,7 +58,10 @@ func play_music(stream_path: String, volume_db: float = -6.0) -> void:
 		bgm_player.play()
 
 func stop_music() -> void:
-	bgm_player.stop()
+	_music_wanted = false
+	if bgm_player:
+		bgm_player.stop()
+		bgm_player.stream = null
 
 func play_sfx(stream_path: String, volume_db: float = 0.0) -> void:
 	var stream := _get_stream(stream_path)

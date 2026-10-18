@@ -28,7 +28,7 @@ var is_ending: bool = false
 var elapsed_time: float = 0.0
 
 func _ready() -> void:
-	AudioManager.play_music("res://audio/music/Sad Descent.ogg", -4.0)
+	AudioManager.stop_music()
 	
 	fade_rect.modulate.a = 1.0
 	fade_rect.visible = true

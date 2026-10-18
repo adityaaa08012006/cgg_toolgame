@@ -149,6 +149,9 @@ func change_scene(target_scene: String, area_title: String = "", area_subtitle: 
 	tween.tween_property(overlay, "color:a", 1.0, 0.35).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	await tween.finished
 
+	if "cutscene" in target_scene:
+		AudioManager.stop_music()
+
 	get_tree().change_scene_to_file(target_scene)
 	await get_tree().process_frame
 	await get_tree().process_frame
