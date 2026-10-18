@@ -106,7 +106,7 @@ theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
 theme_override_fonts/font = ExtResource("3_font_bold")
 theme_override_font_sizes/font_size = 28
-text = "HALF-MINUTE HERO"
+text = "HAVEN'S OATH"
 
 [node name="Subtitle" type="Label" parent="UIContainer/MenuCard/Margin/ContentVBox/TitleBox"]
 layout_mode = 2
@@ -116,7 +116,7 @@ theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
 theme_override_fonts/font = ExtResource("3_font_bold")
 theme_override_font_sizes/font_size = 14
-text = "CHRONICLES OF HAVEN"
+text = "DAWN OF THE CHAMPION"
 
 [node name="Tagline" type="Label" parent="UIContainer/MenuCard/Margin/ContentVBox/TitleBox"]
 layout_mode = 2

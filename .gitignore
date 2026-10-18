@@ -11,3 +11,9 @@ Thumbs.db
 *.tmp
 *.zip
 raw_assets/
+
+# Build exports
+build/
+*.pck
+*.wasm
+index.*

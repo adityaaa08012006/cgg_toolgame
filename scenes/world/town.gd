@@ -88,7 +88,7 @@ func _interact_altar() -> void:
 			{"speaker": "Ancient Shrine", "text": "Arthur kneels in the soft grass before the moss-covered stones."},
 			{"speaker": "Ancient Shrine", "text": "Gently, he places Kaelen's warm silver pendant into the sacred basin. A radiant pillar of golden sunlight descends, enveloping the shrine in peace."},
 			{"speaker": "Ancient Shrine", "text": "High above, the sanctuary bells toll across the green valley. Oakhaven's oath is fulfilled: neither brother fell alone."},
-			{"speaker": "Narrator", "text": "DEMO COMPLETE — Thank you for playing Half-Minute Hero: The Starlight Oath!"}
+			{"speaker": "Narrator", "text": "DEMO COMPLETE — Thank you for playing Haven's Oath: Dawn of the Champion!"}
 		])
 		return
 
